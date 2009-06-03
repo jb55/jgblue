@@ -1,3 +1,22 @@
 body {
 	background-color: #232323;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #FFF;
+}
+
+img {
+	border: 0px;
+}
+
+#container {
+	width: 864px;
+	margin: 0 auto;
+	margin-top: 50px;
+	position: relative;
+}
+
+#banner .logo {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }
