@@ -1,0 +1,30 @@
+body {
+	background-color: #e8f0f4;
+	background-image: url(http://static.jgblue.com/img/bg-fade.png);
+	background-repeat: repeat-x;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 75%;
+	color: #111;
+}
+
+img {
+	border: 0px;
+}
+
+#container {
+	width: 864px;
+	margin: 0 auto;
+	margin-top: 50px;
+	position: relative;
+}
+
+#banner img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.subheading {
+	
+	text-align: center;
+}
