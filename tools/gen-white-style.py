@@ -1,8 +1,9 @@
 import re
 
-color_replacements = (
+replacements = (
 	("#0d151b", "#e8f0f4"), # bg color
 	("#eee", "#111"),
+	("bg-fade.png", "bg-fade-w.png"),
 )
 	
 
@@ -13,8 +14,8 @@ def main():
 	
 	file_white = open("../static/css/style-white.css", "w")
 	
-	for color in color_replacements:
-		contents = re.sub(color[0], color[1], contents)
+	for item in replacements:
+		contents = re.sub(item[0], item[1], contents)
 		
 	file_white.write(contents)
 	file_white.close()
