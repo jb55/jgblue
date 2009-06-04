@@ -1,5 +1,7 @@
 body {
-	background-color: #232323;
+	background-color: #0d151b;
+	background-image: url(http://static.jgblue.com/img/bg-fade.png);
+	background-repeat: repeat-x;
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 75%;
 	color: #eee;
