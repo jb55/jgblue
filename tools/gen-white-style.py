@@ -2,7 +2,7 @@ import re
 
 replacements = (
 	("#0d151b", "#e8eff4"),				# bg color
-	("#eee", "#222"),					# text color
+	("#eee", "#333"),					# text color
 	("bg-fade.png", "bg-fade-w.png"),	# bg fade img
 )
 	
