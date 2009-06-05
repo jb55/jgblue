@@ -1,9 +1,9 @@
 import re
 
 replacements = (
-	("#0d151b", "#dae8f0"), # bg color
-	("#eee", "#222"),
-	("bg-fade.png", "bg-fade-w.png"),
+	("#0d151b", "#e8eff4"),				# bg color
+	("#eee", "#222"),					# text color
+	("bg-fade.png", "bg-fade-w.png"),	# bg fade img
 )
 	
 
