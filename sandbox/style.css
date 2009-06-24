@@ -1,0 +1,45 @@
+@import "http://static.jgblue.com/css/reset.css";
+
+body {
+	background-color: #0d151b;
+	background-image: url(http://static.jgblue.com/img/bg-fade.png);
+	background-repeat: repeat-x;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 75%;
+	color: #eee;
+}
+
+img {
+	border: 0px;
+}
+
+#container {
+	width: 864px;
+	margin: 0 auto;
+	margin-top: 50px;
+	position: relative;
+}
+
+#banner img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#menu ul {
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+}
+
+#menu {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: url(http://static.jgblue.com/img/menu-bg.png) repeat-x;
+	height: 44px;
+	margin-top: 5px;
+}
+
+.subheading {
+	text-align: center;
+}
