@@ -9,6 +9,15 @@
 </ul>
 {% endblock %}
 
+{% block infobox %}
+<h2>Quick Info</h2>
+<table>
+{% for info in item.quickinfo %}
+<tr><td>info.label</td><td>info.value</td></tr>
+{% endfor %}
+</table>
+{% endblock %}
+
 {% block content %}
 <h1>{{ item.name }}</h1>
 {% endblock %}

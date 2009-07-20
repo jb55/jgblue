@@ -5,6 +5,12 @@ def index(request):
 	return render_to_response("item/index.htm")
 
 def detail(request, item_id):
-	item = { "name": "Item Placeholder" }
+	quickinfo = ( 
+		{ "label": "Item Number", "value": item_id },
+	)
+	
+	item = { "name": "Item Placeholder",
+			 "quickinfo": quickinfo, }
+			 
 	data = { "item": item }
 	return render_to_response("item/detail.htm", data)
