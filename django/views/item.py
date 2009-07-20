@@ -6,4 +6,4 @@ def index(request):
 
 def detail(request, item_id):
 	item = {"name": "Item Placeholder",}
-	render_to_response("item/detail.htm", item)
+	return render_to_response("item/detail.htm", item)
