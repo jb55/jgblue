@@ -1,6 +1,6 @@
 {% extends "base.htm" %}
 
-{% block title %}JGE Items{% endblock %}
+{% block title %}JGE Item - {{ item.name }}{% endblock %}
 
 {% block context %}
 <ul>
@@ -9,7 +9,6 @@
 </ul>
 {% endblock %}
 
-{% block infobox %}{% endblock %}
-
 {% block content %}
+<h1>{{ item.name }}</h1>
 {% endblock %}

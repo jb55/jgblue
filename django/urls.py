@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     (r'^$', "jgblue.views.home.index"),
     (r'^admin/', include(admin.site.urls)),
 	(r'^item/', 'jgblue.views.item.index'),
+	(r'^item/\d+$', 'jgblue.views.item.detail'),
 )
