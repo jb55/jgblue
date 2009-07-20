@@ -10,12 +10,14 @@
 {% endblock %}
 
 {% block infobox %}
+<div class="infobox">
 <h2>Quick Info</h2>
 <table>
 {% for info in item.quickinfo %}
-<tr><td>info.label</td><td>info.value</td></tr>
+<tr><td>{{ info.label }}</td><td>{{ info.value }}</td></tr>
 {% endfor %}
 </table>
+</div>
 {% endblock %}
 
 {% block content %}
