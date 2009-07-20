@@ -9,6 +9,22 @@ body {
 	color: #eee;
 }
 
+p {
+	line-height: 20px;
+	margin-top: 20px;
+}
+
+h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #0066ff;
+	font-size: 175%;
+	letter-spacing: -0.05em;
+	font-weight: bold;
+	border-bottom: solid 1px #15191e;
+	padding-bottom: 3px;
+	margin-bottom: 12px;
+}
+
 img {
 	border: 0px;
 }
@@ -24,6 +40,46 @@ img {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+#context {
+	padding: 10px;
+}
+
+#context li
+{
+	display: inline;
+}
+
+#context li:before
+{
+	content: "\00BB \0020";
+}
+
+#context li.first:before
+{
+	content: "";
+}
+
+#content-wrap {
+	background-color: #181e22;
+	padding: 6px;
+}
+
+
+#content {
+	background-color: #20252b;
+	padding: 10px;
+	border: #101317 solid 1px;
+	overflow: hidden;
+}
+
+#infobox {
+	float: right;
+	width: 300px;
+	border: solid 1px #15191e;
+	background-color: #282e36;
+	padding: 10px;
 }
 
 #menu ul {
