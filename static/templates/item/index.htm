@@ -1,0 +1,15 @@
+{% extends "base.htm" %}
+
+{% block title %}JGE Item - {{ item.name }}{% endblock %}
+
+{% block context %}
+<ul>
+	<li class="first">Database</li>
+	<li>Items</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<h1>{{ item.name }}</h1>
+
+{% endblock %}

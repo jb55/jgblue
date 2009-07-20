@@ -15,4 +15,5 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^$', "jgblue.views.home.index"),
     (r'^admin/', include(admin.site.urls)),
+	(r'^item/', 'jgblue.views.item.index'),
 )
