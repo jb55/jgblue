@@ -9,12 +9,6 @@ body {
 	color: #eee;
 }
 
-#bg-art-left {
-	background: url(http://static.jgblue.com/img/bg1.jpg) no-repeat top left;
-	position: relative;
-	height: 621px;
-}
-
 p {
 	line-height: 20px;
 	margin-top: 15px;
@@ -49,7 +43,7 @@ h1 {
 h2 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 120%;
-	margin-bottom: 8px;
+	margin-bottom:8px;
 	letter-spacing: -1px;
 	padding-bottom: 4px;
 	border-bottom: 1px dotted #15191e;
@@ -101,6 +95,7 @@ img {
 	background-color: #20252b;
 	padding: 10px;
 	border: #101317 solid 1px;
+	overflow: hidden;
 }
 
 #infobox {
@@ -122,6 +117,7 @@ img {
 	background: url(http://static.jgblue.com/img/menu-bg.png) repeat-x;
 	height: 44px;
 	margin-top: 5px;
+	overflow: hidden;
 }
 
 .menulist .first a
