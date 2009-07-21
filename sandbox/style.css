@@ -12,7 +12,6 @@ body {
 #bg-art-left {
 	background: url(http://static.jgblue.com/img/bg1.jpg) no-repeat top left;
 	position: relative;
-	top: 0;
 }
 
 p {
@@ -101,7 +100,6 @@ img {
 	background-color: #20252b;
 	padding: 10px;
 	border: #101317 solid 1px;
-	overflow: hidden;
 }
 
 #infobox {
@@ -123,7 +121,6 @@ img {
 	background: url(http://static.jgblue.com/img/menu-bg.png) repeat-x;
 	height: 44px;
 	margin-top: 5px;
-	overflow: hidden;
 }
 
 .menulist .first a
