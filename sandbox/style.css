@@ -9,9 +9,18 @@ body {
 	color: #eee;
 }
 
+#bg-art-left {
+	background: url(http://static.jgblue.com/img/bg1.jpg) no-repeat top left;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 283px;
+	height: 671px;
+}
+
 p {
 	line-height: 20px;
-	margin-top: 20px;
+	margin-top: 15px;
 }
 
 h1 {
@@ -43,7 +52,7 @@ h1 {
 h2 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 120%;
-	margin-bottom:8px;
+	margin-bottom: 8px;
 	letter-spacing: -1px;
 	padding-bottom: 4px;
 	border-bottom: 1px dotted #15191e;
