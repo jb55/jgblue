@@ -13,8 +13,8 @@
 <div id="infobox">
 <h2>Quick Info</h2>
 <table>
-{% for info in item.quickinfo %}
-<tr><td>{{ info.label }}</td><td>{{ info.value }}</td></tr>
+{% for info in quickinfo %}
+<tr {% cycle '' 'class="alt"' %}><td>{{ info.label }}</td><td>{{ info.value }}</td></tr>
 {% endfor %}
 </table>
 </div>
