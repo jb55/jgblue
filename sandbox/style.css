@@ -12,6 +12,7 @@ body {
 #bg-art-left {
 	background: url(http://static.jgblue.com/img/bg1.jpg) no-repeat top left;
 	position: relative;
+	height: 621px;
 }
 
 p {
