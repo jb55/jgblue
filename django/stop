@@ -1,0 +1,8 @@
+#!/bin/bash
+
+PIDFILE="jgblue.pid"
+if [ -f $PIDFILE ]; then
+   kill `cat -- $PIDFILE`
+   rm -f -- $PIDFILE
+fi
+
