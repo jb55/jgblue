@@ -12,9 +12,12 @@ MANAGERS = ADMINS
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'jgblue'             # Or path to database file if using sqlite3.
 DATABASE_USER = 'jgblue'             # Not used with sqlite3.
-DATABASE_PASSWORD = '00x8y8yy'         # Not used with sqlite3.
-DATABASE_HOST = 'db.jgblue.com'             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PASSWORD = 'jgblue123'         # Not used with sqlite3.
+DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+# memcached
+CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -35,7 +38,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/jb555/jgblue/static"
-MEDIA_ROOT = "/home/jb555/jgblue/static"
+MEDIA_ROOT = "/home/jb55/jgblue/static"
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -69,7 +72,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/home/jb555/jgblue/static/templates"
+    "/home/jb55/jgblue/static/templates"
 )
 
 INSTALLED_APPS = (
