@@ -1,5 +1,7 @@
 from django.contrib import admin
-from jgblue.database.models import Item
+import jgblue.database.models as models
 
-admin.site.register(Item)
+admin.site.register(models.Item)
+admin.site.register(models.Spacecraft)
+admin.site.register(models.Medal)
 
