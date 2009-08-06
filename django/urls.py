@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'^$', "jgblue.views.home.index"),
+    (r'^$', "jgblue.database.views.home.index"),
     (r'^admin/', include(admin.site.urls)),
-	(r'^item/$', 'jgblue.views.item.index'),
-	(r'^item/(\d+)$', 'jgblue.views.item.detail'),
+	(r'^item/$', 'jgblue.database.views.item.index'),
+	(r'^item/(\d+)$', 'jgblue.database.views.item.detail'),
 )

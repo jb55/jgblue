@@ -1,5 +1,5 @@
 from django.contrib import admin
-from jgblue.models import Item
+from jgblue.database.models import Item
 
 admin.site.register(Item)
 
