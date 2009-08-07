@@ -1,0 +1,4 @@
+django patches that were applied to make jgblue run
+
+e.g. {ticket#}-blahblah.patch -> http://code.djangoproject.com/ticket/{ticket#}
+

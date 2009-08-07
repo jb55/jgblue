@@ -1,0 +1,39 @@
+Index: django/db/models/sql/query.py
+===================================================================
+--- django/db/models/sql/query.py	(revision 8448)
++++ django/db/models/sql/query.py	(working copy)
+@@ -541,13 +541,20 @@
+                 result.append('%s%s%s' % (connector, qn(name), alias_str))
+             first = False
+         for t in self.extra_tables:
++            if isinstance(t, tuple):
++                t, subselect = t
++            else:
++                subselect = None
+             alias, unused = self.table_alias(t)
+             # Only add the alias if it's not already present (the table_alias()
+             # calls increments the refcount, so an alias refcount of one means
+             # this is the only reference.
+             if alias not in self.alias_map or self.alias_refcount[alias] == 1:
+                 connector = not first and ', ' or ''
+-                result.append('%s%s' % (connector, qn(alias)))
++                if subselect is None:
++                    result.append('%s%s' % (connector, qn(alias)))
++                else:
++                    result.append('%s%s as %s' % (connector, subselect, qn(alias)))
+                 first = False
+         return result, []
+ 
+@@ -1560,7 +1567,11 @@
+         if params:
+             self.extra_params += tuple(params)
+         if tables:
+-            self.extra_tables += tuple(tables)
++            # allow tables to be dictionaries mapping names to subselects
++            if hasattr(tables, 'items'):
++                self.extra_tables += tuple(tables.items())
++            else:
++                self.extra_tables += tuple(tables)
+         if order_by:
+             self.extra_order_by = order_by
+ 

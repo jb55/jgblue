@@ -1,4 +1,5 @@
 from django.db import models
+from jgblue.database import managers
 
 #
 # the default deicmal digits and places
@@ -11,12 +12,14 @@ class Item(models.Model):
     id = models.IntegerField()
     date_added = models.DateTimeField()
     name = models.CharField(max_length=80)
+    objects = managers.ItemManager()
 
     def __unicode__(self):
         return self.name
 
     class Meta:
         db_table = "item"
+        ordering = ['id']
 
 class Medal(models.Model):
     uid = models.AutoField(primary_key=True)
