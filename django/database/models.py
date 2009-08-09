@@ -11,6 +11,7 @@ class Item(models.Model):
     uid = models.AutoField(primary_key=True)
     id = models.IntegerField()
     date_added = models.DateTimeField()
+    is_latest = models.BooleanField()
     name = models.CharField(max_length=80)
     objects = managers.ItemManager()
 
@@ -21,10 +22,22 @@ class Item(models.Model):
         db_table = "item"
         ordering = ['id']
 
+class ItemImage(models.Model):
+    id = models.AutoField(primary_key=True)
+    item_id = models.IntegerField()
+    user_id = models.IntegerField()
+    date_added = models.DateTimeField()
+    uuid = models.CharField(max_length=32)
+    description = models.CharField(max_length=200)
+    
+    class Meta:
+        db_table = "item_images"
+
 class Medal(models.Model):
     uid = models.AutoField(primary_key=True)
     id = models.IntegerField()
     date_added = models.DateTimeField()
+    is_latest = models.BooleanField()
     name = models.CharField(max_length=80)
     type = models.IntegerField()
     experience = models.IntegerField()
@@ -45,6 +58,7 @@ class Spacecraft(models.Model):
     uid = models.AutoField(primary_key=True)
     id = models.IntegerField()
     date_added = models.DateTimeField()
+    is_latest = models.BooleanField()
     name = models.CharField(max_length=80)
     class_id = models.IntegerField()
     size = models.FloatField()
