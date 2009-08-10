@@ -1,5 +1,6 @@
 from django.db import models
-from jgblue.database.managers import ItemManager
+import jgblue.database.managers as managers
+from jgblue.database.choices import ITEM_CLASS, ITEM_SUBCLASS
 
 #
 # the default deicmal digits and places
@@ -14,7 +15,7 @@ class Item(models.Model):
     is_latest = models.BooleanField()
     revision_note = models.CharField(max_length=128)
     name = models.CharField(max_length=80)
-    item_class = models.IntegerField()
+    item_class = models.IntegerField(choices=ITEM_CLASS)
     item_subclass = models.IntegerField()
     level = models.IntegerField()
     sell_price = models.IntegerField()
@@ -24,7 +25,7 @@ class Item(models.Model):
     fire_rate = models.IntegerField()
     damage = models.FloatField()
 
-    objects = ItemManager.ItemManager()
+    objects = managers.ItemManager()
 
     def __unicode__(self):
         return self.name
