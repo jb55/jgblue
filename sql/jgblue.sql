@@ -60,7 +60,7 @@ CREATE TABLE `auth_message` (
   `message` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `auth_message_user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `django_admin_log` (
   PRIMARY KEY  (`id`),
   KEY `django_admin_log_user_id` (`user_id`),
   KEY `django_admin_log_content_type_id` (`content_type_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -175,7 +175,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `app_label` (`app_label`,`model`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -272,9 +272,6 @@ CREATE TABLE `medal` (
   `experience` int(11) unsigned zerofill NOT NULL,
   `flavor_text` varchar(512) default NULL,
   `description` varchar(512) default NULL,
-  `requirement_1` varchar(128) default NULL,
-  `requirement_2` varchar(128) default NULL,
-  `requirement_3` varchar(128) default NULL,
   PRIMARY KEY  (`uid`),
   KEY `SECONDARY` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -326,4 +323,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-08-10 16:57:26
+-- Dump completed on 2009-08-10 19:52:47
