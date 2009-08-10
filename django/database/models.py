@@ -1,5 +1,5 @@
 from django.db import models
-from jgblue.database import managers
+from jgblue.database.managers.ItemManager import ItemManager
 
 #
 # the default deicmal digits and places
@@ -12,8 +12,19 @@ class Item(models.Model):
     id = models.IntegerField()
     date_added = models.DateTimeField()
     is_latest = models.BooleanField()
+    revision_note = models.CharField(max_length=128)
     name = models.CharField(max_length=80)
-    objects = managers.ItemManager()
+    item_class = models.IntegerField()
+    item_subclass = models.IntegerField()
+    level = models.IntegerField()
+    sell_price = models.IntegerField()
+    power_use = models.IntegerField()
+    size = models.IntegerField()
+    mass = models.IntegerField()
+    fire_rate = models.IntegerField()
+    damage = models.FloatField()
+
+    objects = ItemManager()
 
     def __unicode__(self):
         return self.name
@@ -38,6 +49,7 @@ class Medal(models.Model):
     id = models.IntegerField()
     date_added = models.DateTimeField()
     is_latest = models.BooleanField()
+    revision_note = models.CharField(max_length=128)
     name = models.CharField(max_length=80)
     type = models.IntegerField()
     experience = models.IntegerField()
@@ -59,6 +71,7 @@ class Spacecraft(models.Model):
     id = models.IntegerField()
     date_added = models.DateTimeField()
     is_latest = models.BooleanField()
+    revision_note = models.CharField(max_length=128)
     name = models.CharField(max_length=80)
     class_id = models.IntegerField()
     size = models.FloatField()
@@ -67,17 +80,17 @@ class Spacecraft(models.Model):
     max_engine_size = models.IntegerField()
     gun_hardpoints = models.IntegerField()
     missile_hardpoints = models.IntegerField()
-    modx_hardpoints = models.IntegerField()
+    mod_hardpoints = models.IntegerField()
     drag_factor = models.FloatField()
     max_pitch = models.FloatField()
     max_roll = models.FloatField()
     max_yaw = models.FloatField()
     max_cargo = models.FloatField()
     max_pp_size = models.FloatField()
-    max_radar_size = models.FloatField()
     max_ecm_size = models.FloatField()
     max_shield_size = models.FloatField()
     max_capacitor_size = models.FloatField()
+    max_radar_size = models.FloatField()
 
     def __unicode__(self):
         return self.name

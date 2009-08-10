@@ -60,7 +60,7 @@ CREATE TABLE `auth_message` (
   `message` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `auth_message_user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `django_admin_log` (
   PRIMARY KEY  (`id`),
   KEY `django_admin_log_user_id` (`user_id`),
   KEY `django_admin_log_content_type_id` (`content_type_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -220,10 +220,38 @@ CREATE TABLE `item` (
   `id` int(10) unsigned NOT NULL,
   `date_added` datetime NOT NULL,
   `is_latest` tinyint(1) NOT NULL default '0',
+  `revision_note` varchar(128) default NULL,
   `name` varchar(80) NOT NULL,
+  `item_class` int(11) NOT NULL default '0',
+  `item_subclass` int(11) NOT NULL default '0',
+  `level` int(11) NOT NULL default '1',
+  `sell_price` int(11) NOT NULL default '0',
+  `power_use` int(11) NOT NULL default '0',
+  `size` int(11) NOT NULL default '0',
+  `mass` int(11) NOT NULL default '0',
+  `fire_rate` int(11) NOT NULL default '0',
+  `damage` float NOT NULL default '0',
   PRIMARY KEY  (`uid`),
   KEY `SECONDARY` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `item_images`
+--
+
+DROP TABLE IF EXISTS `item_images`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `item_images` (
+  `id` int(10) unsigned NOT NULL,
+  `item_id` int(10) unsigned NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `date_added` datetime NOT NULL,
+  `uuid` char(32) character set latin1 NOT NULL,
+  `description` varchar(200) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -238,6 +266,7 @@ CREATE TABLE `medal` (
   `id` int(10) unsigned NOT NULL,
   `date_added` datetime NOT NULL,
   `is_latest` tinyint(1) NOT NULL default '0',
+  `revision_note` varchar(128) default NULL,
   `name` varchar(80) NOT NULL,
   `type` int(11) NOT NULL,
   `experience` int(11) unsigned zerofill NOT NULL,
@@ -261,30 +290,31 @@ SET character_set_client = utf8;
 CREATE TABLE `spacecraft` (
   `uid` int(10) unsigned NOT NULL auto_increment,
   `id` int(10) unsigned NOT NULL,
-  `date_added` float NOT NULL,
+  `date_added` datetime NOT NULL,
   `is_latest` tinyint(1) NOT NULL default '0',
+  `revision_note` varchar(128) default NULL,
   `name` varchar(80) NOT NULL,
   `class_id` int(11) NOT NULL,
-  `size` float default NULL,
-  `mass` float unsigned zerofill default NULL,
-  `engines` int(11) unsigned zerofill default NULL,
-  `max_engine_size` int(11) unsigned zerofill default NULL,
-  `gun_hardpoints` int(11) unsigned zerofill default NULL,
-  `missile_hardpoints` int(11) unsigned zerofill default NULL,
-  `modx_hardpoints` int(11) unsigned zerofill default NULL,
-  `drag_factor` float unsigned zerofill default NULL,
-  `max_pitch` float unsigned zerofill default NULL,
-  `max_roll` float unsigned zerofill default NULL,
-  `max_yaw` float unsigned zerofill default NULL,
-  `max_cargo` float unsigned zerofill default NULL,
-  `max_pp_size` float unsigned zerofill default NULL,
-  `max_radar_size` float unsigned zerofill default NULL,
-  `max_ecm_size` float unsigned zerofill default NULL,
-  `max_shield_size` float unsigned zerofill default NULL,
-  `max_capacitor_size` float unsigned zerofill default NULL,
+  `size` float NOT NULL default '0',
+  `mass` float NOT NULL default '0',
+  `engines` int(11) unsigned NOT NULL default '0',
+  `max_engine_size` int(11) unsigned NOT NULL default '0',
+  `gun_hardpoints` int(11) unsigned NOT NULL default '0',
+  `missile_hardpoints` int(11) unsigned NOT NULL default '0',
+  `mod_hardpoints` int(11) unsigned NOT NULL default '0',
+  `drag_factor` float NOT NULL default '0',
+  `max_pitch` float NOT NULL default '0',
+  `max_roll` float NOT NULL default '0',
+  `max_yaw` float NOT NULL default '0',
+  `max_cargo` float NOT NULL default '0',
+  `max_pp_size` float NOT NULL default '0',
+  `max_ecm_size` float NOT NULL default '0',
+  `max_shield_size` float NOT NULL default '0',
+  `max_capacitor_size` float NOT NULL default '0',
+  `max_radar_size` float NOT NULL default '0',
   PRIMARY KEY  (`uid`),
   KEY `SECONDARY` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -296,4 +326,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-08-09 20:15:11
+-- Dump completed on 2009-08-10 12:03:06
