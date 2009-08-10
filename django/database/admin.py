@@ -1,8 +1,8 @@
 from django.contrib import admin
-import jgblue.database.models as models
+from jgblue.database.models import * 
 
-admin.site.register(models.Item)
-admin.site.register(models.Spacecraft)
-admin.site.register(models.Medal)
-admin.site.register(models.ItemImage)
+admin.site.register(Item)
+admin.site.register(Spacecraft)
+admin.site.register(Medal)
+admin.site.register(ItemImage)
 
