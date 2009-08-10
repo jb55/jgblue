@@ -1,5 +1,5 @@
 from django.db import models
-from jgblue.database.managers.ItemManager import ItemManager
+from jgblue.database.managers import ItemManager
 
 #
 # the default deicmal digits and places
@@ -24,7 +24,7 @@ class Item(models.Model):
     fire_rate = models.IntegerField()
     damage = models.FloatField()
 
-    objects = ItemManager()
+    objects = ItemManager.ItemManager()
 
     def __unicode__(self):
         return self.name
@@ -41,6 +41,9 @@ class ItemImage(models.Model):
     uuid = models.CharField(max_length=32)
     description = models.CharField(max_length=200)
     
+    def __unicode__(self):
+        return " ".join([self.uuid, self.description])
+
     class Meta:
         db_table = "item_images"
 
@@ -98,3 +101,4 @@ class Spacecraft(models.Model):
     class Meta():
         db_table = "spacecraft"
 
+    revision_note = models.CharField(max_length=128)
