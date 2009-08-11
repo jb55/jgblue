@@ -17,6 +17,8 @@ p {
 .tooltip {
 	background: url(http://static.jgblue.com/img/tooltip.png);
 	color: #82d0da;
+	padding: 12px 0 0 15px;
+	width: 100%;
 }
 
 h1 {
