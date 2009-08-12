@@ -15,48 +15,59 @@ p {
 }
 
 .tooltip {
-	background: url(http://static.jgblue.com/img/tooltip.png);
-	padding: 7px 0 0 15px;
+	
 	color: #82d0da;
 	width: 240px;
-	line-height: 16px;
-}
-
-.tooltip .tipdata {
-	
 }
 
 .tooltip table {
 	width: 100%;
+	border-collapse: collapse;
 }
 
-.tooltip h1 {
-	text-align: center;
-}
-
-.tooltip h2 {
-	color: #0F0;
-}
-
-.tooltip h3 {
-	color: #FF3;
-}
-
-.tooptip td {
-	line-height: 26px;
+.tooltip .tooltipdata {
 	background: url(http://static.jgblue.com/img/tooltip.png);
 }
 
-.tooltip th {
+.border-right, .border-bottom, .border-corner {
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.tooltip .border-right {
+	width: 10px;
+	background-position: top right;
+}
+
+.tooltip .border-bottom {
+	height: 10px;
+	background-position: left bottom;
+}
+
+.tooltip .border-corner {
+	background-position: right bottom;
+}
+
+.tooltipdata th {
 	text-align: center;
+	padding: 13px 0 8px 10px;
+	font-weight: bold;
 }
 
-.tooltip td {
-	padding: 2px 0 2px 0;
+.tooltipdata td {
+	padding: 2px 0 2px 15px;
+}
+
+.tooltip td.price {
+	color: #0F0;
+}
+
+.tooltip td.cls {
+	color: #FF3;
 }
 
 
-.content h1 {
+
+h1 {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #0066ff;
 	font-size: 175%;
@@ -82,7 +93,7 @@ p {
 	background-color: #2f363f;
 }
 
-.content h2 {
+h2 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 120%;
 	margin-bottom:8px;
