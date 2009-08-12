@@ -16,12 +16,47 @@ p {
 
 .tooltip {
 	background: url(http://static.jgblue.com/img/tooltip.png);
+	padding: 7px 0 0 15px;
 	color: #82d0da;
-	padding: 12px 0 0 15px;
+	width: 240px;
+	line-height: 16px;
+}
+
+.tooltip .tipdata {
+	
+}
+
+.tooltip table {
 	width: 100%;
 }
 
-h1 {
+.tooltip h1 {
+	text-align: center;
+}
+
+.tooltip h2 {
+	color: #0F0;
+}
+
+.tooltip h3 {
+	color: #FF3;
+}
+
+.tooptip td {
+	line-height: 26px;
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.tooltip th {
+	text-align: center;
+}
+
+.tooltip td {
+	padding: 2px 0 2px 0;
+}
+
+
+.content h1 {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #0066ff;
 	font-size: 175%;
@@ -47,7 +82,7 @@ h1 {
 	background-color: #2f363f;
 }
 
-h2 {
+.content h2 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 120%;
 	margin-bottom:8px;
