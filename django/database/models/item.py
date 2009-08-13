@@ -21,6 +21,12 @@ ITEM_SUBCLASS = (
     ITEM_GUN_CLASS,
 )
 
+IMAGE_TARGET = (
+    (1, 'Item'),
+    (2, 'Medal'),
+    (3, 'Spacecraft'),
+)
+
 def get_subclass_name(class_id, subclass_id):
     class_len = len(ITEM_CLASS)
     subclass_len = len(ITEM_SUBCLASS)
@@ -65,7 +71,8 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     id = models.AutoField(primary_key=True)
-    item_id = models.IntegerField()
+    target_id = models.IntegerField()
+    target_type = models.IntegerField(choices=IMAGE_TARGET)
     user_id = models.IntegerField()
     date_added = models.DateTimeField()
     uuid = models.CharField(max_length=32)
