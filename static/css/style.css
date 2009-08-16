@@ -11,15 +11,68 @@ body {
 
 p {
 	line-height: 20px;
-	margin-top: 20px;
+	margin-top: 15px;
 }
+
+.tooltip {
+	
+	color: #82d0da;
+	width: 240px;
+}
+
+.tooltip table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.tooltip .tooltipdata {
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.border-right, .border-bottom, .border-corner {
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.tooltip .border-right {
+	width: 10px;
+	background-position: top right;
+}
+
+.tooltip .border-bottom {
+	height: 10px;
+	background-position: left bottom;
+}
+
+.tooltip .border-corner {
+	background-position: right bottom;
+}
+
+.tooltipdata th {
+	text-align: center;
+	padding: 13px 0 8px 10px;
+	font-weight: bold;
+}
+
+.tooltipdata td {
+	padding: 2px 0 2px 15px;
+}
+
+.tooltip td.price {
+	color: #0F0;
+}
+
+.tooltip td.cls {
+	color: #FF3;
+}
+
+
 
 h1 {
 	font-family: Arial, Helvetica, sans-serif;
-	color: #0066ff;
-	font-size: 175%;
-	letter-spacing: -0.05em;
-	font-weight: bold;
+	/*color: #0066ff;*/
+	color: #EEE;
+	font-size: 20px;
+	font-weight: normal;
 	border-bottom: solid 1px #15191e;
 	padding-bottom: 3px;
 	margin-bottom: 12px;
