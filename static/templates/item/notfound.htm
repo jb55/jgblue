@@ -1,0 +1,17 @@
+{% extends "base.htm" %}
+
+{% block title %}Item not found | JGBlue{% endblock %}
+
+{% block context %}
+<ul>
+	<li class="first">Database</li>
+	<li>Items</li>
+</ul>
+{% endblock %}
+
+{% block infobox %}{% endblock %}
+
+{% block content %}
+<h1>Item not found!</h1>
+<p>It appears that item #{{ itemid }} does not yet exist in our database. </p>
+{% endblock %}

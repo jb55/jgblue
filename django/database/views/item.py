@@ -7,12 +7,6 @@ def index(request):
 
 def detail(request, item_id):
     
-    quickinfo = (
-        ("Item Number", item_id),
-        ("Note", ),
-        ("Revision Note", ""),
-    )
-    
     item = Item.objects.get_item(item_id)
 
     data = {}
