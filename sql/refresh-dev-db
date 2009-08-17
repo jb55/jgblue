@@ -1,0 +1,7 @@
+#!/bin/bash
+DEVDB=jgblue_dev
+USER=jgblue
+PWD=jgblue123
+
+exec echo "drop database if exists $DEVDB; create database $DEVDB" | mysql -u $USER -p$PWD && \
+./dump-db-data && mysql -u $USER -p$PWD $DEVDB < jgblue-data.sql
