@@ -1,6 +1,6 @@
 {% extends "base.htm" %}
 
-{% block title %}{{ item.name }} | JGBlue{% endblock %}
+{% block title %}{{ item.name }}{% endblock %}
 
 {% block context %}
 <ul>
@@ -13,8 +13,10 @@
 <div id="infobox">
 <h2>Quick Info</h2>
 <table>
-{% for info in quickinfo %}
-<tr {% cycle '' 'class="alt"' %}><td>{{ info.label }}</td><td>{{ info.value }}</td></tr>
+{% for label, value in quickinfo %}
+{% if value %}
+<tr {% cycle '' 'class="alt"' %}><td>{{ label }}</td><td>{{ value }}</td></tr>
+{% endif %}
 {% endfor %}
 </table>
 </div>
@@ -22,7 +24,7 @@
 
 {% block content %}
 <h1>{{ item.name }}</h1>
-{% include "tooltip.htm" %}
+{% include "item/tooltip.htm" %}
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras venenatis rutrum elit, quis porta tellus euismod tincidunt. Nam non felis at libero interdum porta. Phasellus viverra urna quis sem mattis sed laoreet est dignissim. Sed a sem arcu, quis sagittis tellus. Ut velit diam, lobortis vel hendrerit vitae, tincidunt non enim. Aliquam et leo eros, eu pretium risus. Aenean orci felis, adipiscing non pretium at, condimentum dictum velit. Nulla lorem magna, lacinia vitae tristique non, placerat at ante. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In imperdiet laoreet ultricies. Vivamus ut urna turpis, quis molestie elit. Praesent et tempor ipsum. Integer sit amet mauris neque, a cursus ante. Curabitur eget justo massa, ac sagittis augue.</p>
 

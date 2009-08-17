@@ -10,9 +10,11 @@ class ItemManager(models.Manager):
         # I have to do a len() before the limit or it wont return
         # the results in the right order. wtf?
         # TODO: figure out what's going on here
-        len(q)
-        item = q[0]
+        l = len(q)
+        if l == 0:
+            return None
 
+        item = q[0]
         return item
 
     def get_items(self, page=1, per_page=25):

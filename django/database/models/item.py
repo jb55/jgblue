@@ -14,7 +14,7 @@ ITEM_CLASS = (
 )
 
 ITEM_GUN_CLASS = (
-    'Electron',
+    'Electron Gun',
 )
 
 ITEM_SUBCLASS = (
@@ -49,6 +49,7 @@ class Item(models.Model):
     date_added = models.DateTimeField()
     is_latest = models.BooleanField()
     revision_note = models.CharField(max_length=128)
+    note = models.CharField(max_length=128)
     name = models.CharField(max_length=80)
     item_class = models.IntegerField(choices=item_class_choices())
     item_subclass = models.IntegerField()
@@ -61,6 +62,18 @@ class Item(models.Model):
     damage = models.FloatField()
 
     objects = managers.ItemManager()
+
+    @property
+    def item_class_str(self):
+        return ITEM_CLASS[self.item_class]
+
+    @property
+    def dps(self):
+        return self.damage * self.fire_rate
+
+    @property
+    def item_subclass_str(self):
+        return get_subclass_name(self.item_class, self.item_subclass)
 
     def __unicode__(self):
         return self.name

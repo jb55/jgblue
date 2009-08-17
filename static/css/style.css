@@ -69,8 +69,8 @@ p {
 
 h1 {
 	font-family: Arial, Helvetica, sans-serif;
-	/*color: #0066ff;*/
-	color: #EEE;
+	color: #0066ff;
+	/*color: #EEE;*/
 	font-size: 20px;
 	font-weight: normal;
 	border-bottom: solid 1px #15191e;

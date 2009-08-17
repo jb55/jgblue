@@ -1,18 +1,20 @@
 <div class="tooltip">
-	<table>
-		<tr><td>
-		<table class="tooltipdata">
-			<tr><th>{% item.name %}</th></tr>
-			<tr><td class="price">Sell Price / Unit: {% item.sell_price %}</td></tr>
-			<tr><td class="cls">{% item.item_class %}</td></tr>
-			<tr><td>Level: {% item.level %}</td></tr>
-			<tr><td>DPS: {% item.dps %}</td></tr>
-			<tr><td>Damage: {% item.damage %}</td></tr>
-			<tr><td>Fire Rate: {% item.fire_rate %} Per Second</td></tr>
-		</table></td><td class="border-right"/></tr>
-		<tr>
-		<td class="border-bottom"/>
-		<td class="border-corner"/>
-		</tr>
-	</table>
+    <table>
+        <tr><td>
+        <table class="tooltipdata">
+            <tr><th>{{ item.name }}</th></tr>
+            <tr><td class="price">Sell Price / Unit: {{ item.sell_price }}</td></tr>
+            <tr><td class="cls">{{ item.item_class_str }}</td></tr>
+            <tr><td>Level: {{ item.level }}</td></tr>
+            <tr><td>DPS: {{ item.dps }}</td></tr>
+            <tr><td>Damage: {{ item.damage }}</td></tr>
+            <tr><td>Fire Rate: {{ item.fire_rate }} Per Second</td></tr>
+            <tr><td>&nbsp;</tr></td>
+            <tr><td>{{ item.item_subclass_str }}</tr></td>
+        </table></td><td class="border-right"/></tr>
+        <tr>
+        <td class="border-bottom"/>
+        <td class="border-corner"/>
+        </tr>
+    </table>
 </div>
