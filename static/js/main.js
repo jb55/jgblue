@@ -20,7 +20,7 @@ jgblue.listview = function (options, data) {
 		}
 		tab.push("</tr>");
 
-		var url = "file:///C:/Users/Jb55/dev/jgblue/trunk/sandbox/data.js";
+		var url = "http://dev.jgblue.com/item/?json=1";
 		
 		/* our super-cool web 2.0 json XMLHttpRequest, also known as ajax to all the cool kids */
 		$.getJSON(url, function(data) {								
