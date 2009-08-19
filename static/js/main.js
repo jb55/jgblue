@@ -10,7 +10,7 @@ jgblue.listview = function (options, data) {
 	 */
 	function buildTable() {
 		var num_cols = _cols.length;
-		var tab = ["<table><tr>"];
+		var tab = ["<table width=\"100%\"><tr>"];
 		var col = _cols[0];
 		
 		/* build column headers from the template */
@@ -20,7 +20,7 @@ jgblue.listview = function (options, data) {
 		}
 		tab.push("</tr>");
 
-		var url = "file:///C:/Users/Jb55/dev/jgblue/trunk/sandbox/data.js";
+		var url = "file:///C:/Users/jb55/dev/projects/jgblue-dev/sandbox/data.js";
 		
 		/* our super-cool web 2.0 json XMLHttpRequest, also known as ajax to all the cool kids */
 		$.getJSON(url, function(data) {								
