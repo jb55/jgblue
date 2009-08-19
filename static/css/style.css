@@ -66,7 +66,22 @@ p {
 }
 
 #listview table {
-	width: 100%;
+	background: #282e36;
+}
+
+#listview table {
+	border-collapse: collapse;
+}
+
+#listview table th {
+	background: #2f3740 url(http://static.jgblue.com/img/column-bg.png) top left repeat-x;
+	border: 1px solid #191d23;
+	padding: 8px;
+}
+
+#listview table td {
+	padding: 15px 8px 15px 8px;
+	border: 1px solid #191d23;
 }
 
 h1 {
