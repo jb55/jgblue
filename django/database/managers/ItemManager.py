@@ -1,11 +1,14 @@
 from django.db import models, connection
+from django.core import serializers
 from jgblue.database.models import *
 
+FORMATS = ('xml', 'json')
 
 class ItemManager(models.Manager):
+    serializer = serializers.get_serializer("json")()
     
-    def get_item(self, id):
-        q = self.filter(id__exact=id)
+    def get_item(self, id, json=False):
+        q = self.filter(id=id, is_latest=1)
 
         # I have to do a len() before the limit or it wont return
         # the results in the right order. wtf?
@@ -15,15 +18,22 @@ class ItemManager(models.Manager):
             return None
 
         item = q[0]
-        return item
+        if not json:
+            return item
+        else:
+            return self.serializer.serialize(q, ensure_ascii=False )
 
-    def get_items(self, page=1, per_page=25):
+
+    def get_items(self, page=1, per_page=25, json=False):
         
         # NOTE: the dictionary  passed into the tables parameter is a custom patch
         # and is not currently in the django revision we're using (r11410)
-        q = self.filter(is_latest='1')
+        q = self.filter(is_latest=1)
 
-        return q
+        if not json:
+            return q
+        else:
+            return self.serializer.serialize(q, ensure_ascii=False)
 
     def set_latest_item(self, item_id):
         cursor = connection.cursor()

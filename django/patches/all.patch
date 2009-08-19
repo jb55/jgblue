@@ -1,0 +1,69 @@
+Index: django/db/models/sql/query.py
+===================================================================
+--- django/db/models/sql/query.py	(revision 11410)
++++ django/db/models/sql/query.py	(working copy)
+@@ -861,13 +861,20 @@
+                 result.append('%s%s%s' % (connector, qn(name), alias_str))
+             first = False
+         for t in self.extra_tables:
++            if isinstance(t, tuple):
++                t, subselect = t
++            else:
++                subselect = None
+             alias, unused = self.table_alias(t)
+             # Only add the alias if it's not already present (the table_alias()
+             # calls increments the refcount, so an alias refcount of one means
+             # this is the only reference.
+             if alias not in self.alias_map or self.alias_refcount[alias] == 1:
+                 connector = not first and ', ' or ''
+-                result.append('%s%s' % (connector, qn(alias)))
++                if subselect is None:
++                    result.append('%s%s' % (connector, qn(alias)))
++                else:
++                    result.append('%s%s as %s' % (connector, subselect, qn(alias)))
+                 first = False
+         return result, []
+ 
+@@ -2187,7 +2194,11 @@
+         if params:
+             self.extra_params += tuple(params)
+         if tables:
+-            self.extra_tables += tuple(tables)
++            # allow tables to be dictionaries mapping names to subselects
++            if hasattr(tables, 'items'):
++                self.extra_tables += tuple(tables.items())
++            else:
++                self.extra_tables += tuple(tables)
+         if order_by:
+             self.extra_order_by = order_by
+ 
+Index: django/core/servers/fastcgi.py
+===================================================================
+--- django/core/servers/fastcgi.py	(revision 11410)
++++ django/core/servers/fastcgi.py	(working copy)
+@@ -74,7 +74,7 @@
+     'minspare': 2,
+     'maxchildren': 50,
+     'maxrequests': 0,
+-    'debug': None,
++    'debug': True,
+     'outlog': None,
+     'errlog': None,
+     'umask': None,
+Index: django/core/serializers/python.py
+===================================================================
+--- django/core/serializers/python.py	(revision 11410)
++++ django/core/serializers/python.py	(working copy)
+@@ -27,11 +27,7 @@
+         self._current = {}
+ 
+     def end_object(self, obj):
+-        self.objects.append({
+-            "model"  : smart_unicode(obj._meta),
+-            "pk"     : smart_unicode(obj._get_pk_val(), strings_only=True),
+-            "fields" : self._current
+-        })
++        self.objects.append(self._current)
+         self._current = None
+ 
+     def handle_field(self, obj, field):
