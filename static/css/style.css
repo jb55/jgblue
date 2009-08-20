@@ -216,6 +216,15 @@ img {
 	display: block;
 }
 
+a {
+	color: #eee;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 .menulist a:hover
 {
 	color: #ddd;
