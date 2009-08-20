@@ -33,8 +33,10 @@ jgblue.listview = function (options, data) {
 		$.getJSON(url, function(data) {								
 			var num_items = data.items.length,
 				items = data.items,
-				val = null;
+				val = null,
+				item = null,
 				i=0,j=0;
+				
 			
 			/* load all items and put their data into their respective columns */
 			for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
