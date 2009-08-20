@@ -16,7 +16,7 @@ jgblue.listview = function (options, data) {
 		var num_cols = _cols.length,
 		    tab = ["<table width=\"100%\"><tr>"],
 		    col = _cols[0],
-			url = "file:///C:/Users/jb55/dev/projects/jgblue-dev/sandbox/data.js",
+			url = "http://dev.jgblue.com/item/?json=1",
 			i=0,j=0;
 		
 		/* build column headers from the template */
