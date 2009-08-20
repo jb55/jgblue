@@ -77,11 +77,16 @@ p {
 	background: #2f3740 url(http://static.jgblue.com/img/column-bg.png) top left repeat-x;
 	border: 1px solid #191d23;
 	padding: 8px;
+    font-weight: bold;
 }
 
 #listview table td {
 	padding: 15px 8px 15px 8px;
 	border: 1px solid #191d23;
+}
+
+.lv-row-highlight {
+    background-color: #2F3740;
 }
 
 h1 {
