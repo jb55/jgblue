@@ -78,6 +78,6 @@ jgblue.listview.templates = {
 			{id: "level", name: "Level", type: "number", align: "center", width: "10%"},
 			/*{id: "level", name: "Rank", type: "number", align: "center", width: "10%"},*/
 			{id: "item_class", name: "Class", type: "number", align: "center", width: "30%"}
-		],
-	},
+		]
+	}
 };
