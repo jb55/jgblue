@@ -2,7 +2,7 @@
 var jgblue = {};
 
 function compute_obj_link(data) {
-	return ["<a href=\"",data.template.id,"/",data.item.id,"\">",data.item[data.field],"</a>"].join('');
+	return ["<a href=\"/",data.template.id,"/",data.item.id,"\">",data.item[data.field],"</a>"].join('');
 }
 
 jgblue.listview = function (options, data) {
