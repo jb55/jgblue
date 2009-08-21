@@ -18,6 +18,8 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 # memcached
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+CACHE_MIDDLEWARE_KEY_PREFIX = 'jgblue'
+CACHE_MIDDLEWARE_SECONDS = 60 * 5 # 5 minutes for now, change to 15 later
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -61,10 +63,12 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware', # must be first
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'jgblue.middleware.StripWhitespaceMiddleware',
+    'jgblue.middleware.StripWhitespaceMiddleware', 
+    'django.middleware.cache.FetchFromCacheMiddleware', # must be last
 )
 
 ROOT_URLCONF = 'jgblue.urls'
