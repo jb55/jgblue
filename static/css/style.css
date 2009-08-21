@@ -78,6 +78,7 @@ p {
 	border: 1px solid #191d23;
 	padding: 8px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 #listview table td {

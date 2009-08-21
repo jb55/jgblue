@@ -26,6 +26,52 @@ function g_compute_enum(data) {
     return jgblue.enums[data.field][data.value];
 };
 
+/* add swap to array */
+Array.prototype.swap=function(a, b)
+{
+    var tmp=this[a];
+    this[a]=this[b];
+    this[b]=tmp;
+}
+
+/* 
+ * quicksort implementation 
+ * 
+ * data: an array of Objects
+ * on_field: the field to sort on in Objects
+ * order: 0 ascending, 1 descending
+ */
+function g_quicksort(array, begin, end, on_field, order) {
+
+    if(end-1>begin) {
+        var pivot=begin+Math.floor(Math.random()*(end-begin));
+
+        pivot=g_partition(array, begin, end, pivot, on_field, order);
+
+        g_quicksort(array, begin, pivot, on_field, order);
+        g_quicksort(array, pivot+1, end, on_field, order);
+    }
+};
+
+/*
+ * partition, used in the quicksort algorithm
+ */
+function g_partition(array, begin, end, pivot, on_field, order)
+{
+    var piv = array[pivot][on_field],
+        store = begin,
+        ix;
+    array.swap(pivot, end-1);
+    for(ix=begin; ix<end-1; ++ix) {
+        if(order ? array[ix][on_field]<=piv : array[ix][on_field]>=piv) {
+            array.swap(store, ix);
+            ++store;
+        }
+    }
+    array.swap(end-1, store);
+    return store;
+};
+
 /* data index */
 jgblue.index = {};
 
@@ -40,7 +86,8 @@ jgblue.listview = function (options) {
 
     /* register events */
     function register_events() {
-        var selector = $(_parent + " tr");
+        var selector = $(_parent + " tr"),
+            k, col;
 
         /* listview row highlight */
         selector.live("mouseover", function() {
@@ -49,16 +96,40 @@ jgblue.listview = function (options) {
         selector.live("mouseout", function() {
             $(this).toggleClass("lv-row-highlight", false);
         });
-        $(_parent+" th").live("click", function() {
-            sort();
+
+        /* column headers */
+        $("#listview th").live("click", function() {
+            var col, col_id, saved_asc;
+            col_id = $(this).attr("id").slice(4);
+            col = get_col(col_id);
+            if( col.asc == undefined )
+                col.asc == true;
+            if( col.cur_asc == undefined )
+                col.cur_asc = col.asc;
+            sort(col_id, col.cur_asc);
+            saved_asc = col.cur_asc;
+            reset_sort_orders();
+            col.cur_asc = !saved_asc;
         });
+    }
+
+    function get_col(id) {
+        for(var i=0; i < _cols.length; ++i)
+            if(_cols[i].id == id)
+                return _cols[i];
+        return undefined;
+    }
+
+    function reset_sort_orders() {
+        for(var i=0; i < _cols.length; ++i)
+            _cols[i].cur_asc = _cols[i].asc;
     }
 
     function sort(column_id, order) {
         var tbody = $("#lv-body"),
             body = [];
         tbody.empty();
-        _data.reverse();
+        g_quicksort(_data, 0, _data.length, column_id, order);
         build_body(_data, body);
         tbody.append(body.join(""));
     }
@@ -97,7 +168,7 @@ jgblue.listview = function (options) {
         /* build column headers from the template */
         for(i=0; i < num_cols; ++i, col=_cols[i]) {
             tab.push("<th style=\"width:", col.width,";text-align:", 
-                        col.align,";\">", col.name,"</th>");
+                        col.align,";\" id=\"col-",col.id,"\">", col.name,"</th>");
         }
         tab.push("</tr></thead><tbody id=\"lv-body\">");
         
@@ -125,6 +196,7 @@ jgblue.listview = function (options) {
     var _template = jgblue.listview.templates[options.template],
         _cols = _template.columns,
         _parent = options.parent,
+        _order = true,
         _data;
 
     build_table();
@@ -138,7 +210,8 @@ jgblue.listview.templates = {
     items: {
         id: "item",
         columns: [
-            {id: "name", name: "Name", type: "text", align: "left", width: "60%", compute:g_compute_link},
+            {id: "name", name: "Name", type: "text", 
+             align: "left", width: "60%", compute:g_compute_link, asc: true},
             {id: "level", name: "Level", type: "number", align: "center", width: "10%" }, 
             {id: "item_class", name: "Class", type: "number", align: "center", width: "30%", compute:g_compute_class}
         ]
