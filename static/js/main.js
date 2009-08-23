@@ -15,8 +15,12 @@ var jgblue = {};
  * value - the value of the field (equiv to item[field])
  */
 function g_compute_link(data) {
-    return ["<a href=\"/",data.template.id,"/",data.item.id,"\">",data.value,"</a>"].join("");
+    return ["<a href=\"",g_link(data.template, data.item.id),"\">",data.value,"</a>"].join("");
 };
+
+function g_link(template, id) {
+    return "/"+template.id+"/"+id;
+}
 
 function g_compute_class(data) {
     return ["<div class=\"item_class\">", jgblue.enums.item_class[data.value],"</div>"].join("");
@@ -86,8 +90,7 @@ jgblue.listview = function (options) {
 
     /* register events */
     function register_events() {
-        var selector = $(_parent + " tr"),
-            k, col;
+        var selector = $(_parent + " tr");
 
         /* listview row highlight */
         selector.live("mouseover", function() {
@@ -95,6 +98,9 @@ jgblue.listview = function (options) {
         });
         selector.live("mouseout", function() {
             $(this).toggleClass("lv-row-highlight", false);
+        });
+        selector.live("click", function() {
+            
         });
 
         /* column headers */
@@ -135,14 +141,15 @@ jgblue.listview = function (options) {
     }
 
     function build_body(items, tab, order) {
-        var i, j, item, col, val,
+        var i, j, item, col, val, link,
             num_cols = _cols.length,
             num_items = items.length;
 
         /* load all items and put their data into their respective columns */
         for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
             jgblue.index[item.id] = item;
-            tab.push("<tr>");
+            link = g_link(_template, item.id);
+            tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
             for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
                 val = col.compute == undefined ? item[col.id] : 
                     col.compute({template: _template, item:item, field: col.id, value: item[col.id]});
@@ -162,8 +169,8 @@ jgblue.listview = function (options) {
         var num_cols = _cols.length,
             tab = ["<table width=\"100%\"><thead><tr>"],
             col = _cols[0],
-            url = ["http://dev.jgblue.com/",_template.id,"/?json=1"].join("");
-            i=0,j=0;
+            url = ["http://dev.jgblue.com/",_template.id,"/?json=1"].join(""),
+            i=0;
         
         /* build column headers from the template */
         for(i=0; i < num_cols; ++i, col=_cols[i]) {
@@ -174,11 +181,7 @@ jgblue.listview = function (options) {
         
         /* our super-cool web 2.0 json XMLHttpRequest, also known as ajax to all the cool kids */
         $.getJSON(url, function(data) {                             
-            var num_items = data.items.length,
-                items = data.items,
-                val,
-                item,
-                i=0,j=0;
+            var items = data.items;
 
             _data = items;
             build_body(items, tab)
@@ -196,7 +199,6 @@ jgblue.listview = function (options) {
     var _template = jgblue.listview.templates[options.template],
         _cols = _template.columns,
         _parent = options.parent,
-        _order = true,
         _data;
 
     build_table();
@@ -211,8 +213,8 @@ jgblue.listview.templates = {
         id: "item",
         columns: [
             {id: "name", name: "Name", type: "text", 
-             align: "left", width: "60%", compute:g_compute_link, asc: true},
-            {id: "level", name: "Level", type: "number", align: "center", width: "10%" }, 
+             align: "left", width: "60%", compute:g_compute_link, asc: true, cur_asc: false},
+            {id: "level", name: "Level", type: "number", align: "center", width: "10%", asc: false }, 
             {id: "item_class", name: "Class", type: "number", align: "center", width: "30%", compute:g_compute_class}
         ]
     }

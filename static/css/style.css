@@ -84,6 +84,7 @@ p {
 #listview table td {
 	padding: 15px 8px 15px 8px;
 	border: 1px solid #191d23;
+    cursor: pointer;
 }
 
 .lv-row-highlight {
@@ -218,7 +219,7 @@ img {
 .menulist a
 {
 	text-decoration: none;
-	color: #bbb;
+	color: #ddd;
 	display: block;
 }
 
