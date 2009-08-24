@@ -1,8 +1,8 @@
-@import "http://static.jgblue.com/css/reset.css";
+@import "http://dstatic.jgblue.com/css/reset.css";
 
 body {
 	background-color: #0d151b;
-	background-image: url(http://static.jgblue.com/img/bg-fade.png);
+	background-image: url(http://dstatic.jgblue.com/img/bg-fade.png);
 	background-repeat: repeat-x;
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 75%;
@@ -26,11 +26,11 @@ p {
 }
 
 .tooltip .tooltipdata {
-	background: url(http://static.jgblue.com/img/tooltip.png);
+	background: url(http://dstatic.jgblue.com/img/tooltip.png);
 }
 
 .border-right, .border-bottom, .border-corner {
-	background: url(http://static.jgblue.com/img/tooltip.png);
+	background: url(http://dstatic.jgblue.com/img/tooltip.png);
 }
 
 .tooltip .border-right {
@@ -74,7 +74,7 @@ p {
 }
 
 #listview table th {
-	background: #2f3740 url(http://static.jgblue.com/img/column-bg.png) top left repeat-x;
+	background: #2f3740 url(http://dstatic.jgblue.com/img/column-bg.png) top left repeat-x;
 	border: 1px solid #191d23;
 	padding: 8px;
     font-weight: bold;
@@ -191,7 +191,7 @@ img {
 #menu {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	background: url(http://static.jgblue.com/img/menu-bg.png) repeat-x;
+	background: url(http://dstatic.jgblue.com/img/menu-bg.png) repeat-x;
 	height: 44px;
 	margin-top: 5px;
 	overflow: hidden;
@@ -211,7 +211,7 @@ img {
 .menulist li
 {
 	list-style-image: none;
-	background: url(http://static.jgblue.com/img/menu-sep.png) right no-repeat;
+	background: url(http://dstatic.jgblue.com/img/menu-sep.png) right no-repeat;
 	float: left;
 	margin: 0;
 }
