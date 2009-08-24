@@ -77,11 +77,18 @@ p {
 	background: #2f3740 url(http://static.jgblue.com/img/column-bg.png) top left repeat-x;
 	border: 1px solid #191d23;
 	padding: 8px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 #listview table td {
 	padding: 15px 8px 15px 8px;
 	border: 1px solid #191d23;
+    cursor: pointer;
+}
+
+.lv-row-highlight {
+    background-color: #2F3740;
 }
 
 h1 {
@@ -212,12 +219,12 @@ img {
 .menulist a
 {
 	text-decoration: none;
-	color: #bbb;
+	color: #ddd;
 	display: block;
 }
 
 a {
-	color: #eee;
+	color: #88abff;
 	text-decoration: none;
 }
 
