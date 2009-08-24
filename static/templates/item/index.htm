@@ -2,18 +2,6 @@
 
 {% block title %}JGE Items{% endblock %}
 
-{% block context %}
-<ul>
-	<li class="first">Database</li>
-	<li><a href="/items">Items</a></li>
-    {% if has_cls %}
-        <li><a href="/items/{{ cls }}">{{ cls_str }}</a></li>
-        {% if has_subcls %}
-            <li><a href="/items/{{ cls }}.{{ subcls }}">{{ subcls_str }}</a></li>
-        {% endif %}
-    {% endif %}
-</ul>
-{% endblock %}
 
 {% block infobox %}{% endblock %}
 

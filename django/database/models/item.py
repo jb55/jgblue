@@ -27,15 +27,13 @@ IMAGE_TARGET = (
     (3, 'Spacecraft'),
 )
 
-UNK_CLASS = "Unknown Class"
-UNK_SUBCLASS = "Unknown Subclass"
+UNK_CLASS = "Unknown Class (%d)"
+UNK_SUBCLASS = "Unknown Subclass (%d)"
 
 def get_class_name(class_id):
-    import logging
-    logging.debug(type(class_id))
 
     if class_id > len(ITEM_CLASS) or class_id < 0:
-        return UNK_CLASS
+        return UNK_CLASS % class_id
     else:
         return ITEM_CLASS[class_id]
 
@@ -43,15 +41,15 @@ def get_subclass_name(class_id, subclass_id):
     class_len = len(ITEM_CLASS)
 
     if class_id >= class_len:
-        return UNK_SUBCLASS
+        return UNK_SUBCLASS % subclass_id
 
     subclasses = len(ITEM_SUBCLASS)
     if class_id >= subclasses:
-        return UNK_SUBCLASS
+        return UNK_SUBCLASS % subclass_id
 
     subclass_len = len(ITEM_SUBCLASS[class_id])
     if subclass_id >= subclass_len:
-        return UNK_SUBCLASS
+        return UNK_SUBCLASS % subclass_id
 
     return ITEM_SUBCLASS[class_id][subclass_id]
 
