@@ -1,2 +1,2 @@
-from jgblue.database.managers.ItemManager import ItemManager
+from jgblue.database.managers import item
 

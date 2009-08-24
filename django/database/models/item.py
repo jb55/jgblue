@@ -1,5 +1,5 @@
 from django.db import models
-import jgblue.database.managers as managers
+from jgblue.database.managers.item import ItemManager
 
 ITEM_CLASS = (
     'Gun',
@@ -27,12 +27,29 @@ IMAGE_TARGET = (
     (3, 'Spacecraft'),
 )
 
+UNK_CLASS = "Unknown Class (%d)"
+UNK_SUBCLASS = "Unknown Subclass (%d)"
+
+def get_class_name(class_id):
+
+    if class_id > len(ITEM_CLASS) or class_id < 0:
+        return UNK_CLASS % class_id
+    else:
+        return ITEM_CLASS[class_id]
+
 def get_subclass_name(class_id, subclass_id):
     class_len = len(ITEM_CLASS)
-    subclass_len = len(ITEM_SUBCLASS)
 
-    if class_id >= class_len or subclass_id >= subclass_len:
-        return "Unknown Subclass"
+    if class_id >= class_len:
+        return UNK_SUBCLASS % subclass_id
+
+    subclasses = len(ITEM_SUBCLASS)
+    if class_id >= subclasses:
+        return UNK_SUBCLASS % subclass_id
+
+    subclass_len = len(ITEM_SUBCLASS[class_id])
+    if subclass_id >= subclass_len:
+        return UNK_SUBCLASS % subclass_id
 
     return ITEM_SUBCLASS[class_id][subclass_id]
 
@@ -48,8 +65,8 @@ class Item(models.Model):
     id = models.IntegerField()
     date_added = models.DateTimeField()
     is_latest = models.BooleanField()
-    revision_note = models.CharField(max_length=128)
-    note = models.CharField(max_length=128)
+    revision_note = models.CharField(max_length=128, blank=True)
+    note = models.CharField(max_length=128, blank=True)
     name = models.CharField(max_length=80)
     item_class = models.IntegerField(choices=item_class_choices())
     item_subclass = models.IntegerField()
@@ -61,7 +78,7 @@ class Item(models.Model):
     fire_rate = models.IntegerField()
     damage = models.FloatField()
 
-    objects = managers.ItemManager()
+    objects = ItemManager()
 
     @property
     def item_class_str(self):
