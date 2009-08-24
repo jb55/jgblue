@@ -1,17 +1,44 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
-from jgblue.database.models.item import Item
+from jgblue.database.models.item import *
+from jgblue.database.util.menu import *
+from jgblue.database.util.responses import json_response
 
-def json_response(data):
-    return HttpResponse(''.join(['({"items":',data,'})']), mimetype='application/x-javascript; charset=utf-8')
+# /items/cls.subcls
+def index(request, cls, subcls):
 
-def index(request):
-    
+    has_cls = cls != ""
+    has_subcls = subcls != ""
+
+    if has_cls:
+        cls = int(cls)
+    if has_subcls:
+        subcls = int(subcls)
+
     if bool(request.REQUEST.get('json')):
-        json_items = Item.objects.get_items(json=True)
+        kwargs = {}
+        category = []
+
+        if has_cls:
+            category.append(cls)
+            if has_subcls:
+                category.append(subcls)
+
+        if len(category) > 0:
+            kwargs["category"] = category
+
+        json_items = Item.objects.get_items(json=True, **kwargs)
         return json_response(json_items)
 
-    return render_to_response("item/index.htm")
+    data = {}
+    menu = build_item_context(cls, subcls)
+
+    data["menu"] = menu
+
+    return render_to_response("item/index.htm", data)
+
+
+
 
 def detail(request, item_id):
     
@@ -33,6 +60,10 @@ def detail(request, item_id):
         ("Revision Note", item.revision_note),
     )
 
+    menu = build_item_context(item.item_class, item.item_subclass)
+    #menu.add_item(item.name)
+
+    data["menu"] = menu
     data["item"] = item
     data["quickinfo"] = quickinfo
              

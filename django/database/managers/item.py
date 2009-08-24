@@ -24,11 +24,16 @@ class ItemManager(models.Manager):
             return self.serializer.serialize(q, ensure_ascii=False )
 
 
-    def get_items(self, page=1, per_page=25, json=False):
+    def get_items(self, category=(-1,-1), page=1, per_page=25, json=False):
+
+        cat_filter = {}
+        if category[0] != -1:
+            cat_filter["item_class"] = category[0]
+            if len(category) >= 2:
+                if category[1] != -1:
+                    cat_filter["item_subclass"] = category[1]
         
-        # NOTE: the dictionary  passed into the tables parameter is a custom patch
-        # and is not currently in the django revision we're using (r11410)
-        q = self.filter(is_latest=1)
+        q = self.filter(is_latest=1,**cat_filter)
 
         if not json:
             return q

@@ -1,5 +1,5 @@
 from django.db import models
-import jgblue.database.managers as managers
+from jgblue.database.managers.item import ItemManager
 
 ITEM_CLASS = (
     'Gun',
@@ -27,12 +27,31 @@ IMAGE_TARGET = (
     (3, 'Spacecraft'),
 )
 
+UNK_CLASS = "Unknown Class"
+UNK_SUBCLASS = "Unknown Subclass"
+
+def get_class_name(class_id):
+    import logging
+    logging.debug(type(class_id))
+
+    if class_id > len(ITEM_CLASS) or class_id < 0:
+        return UNK_CLASS
+    else:
+        return ITEM_CLASS[class_id]
+
 def get_subclass_name(class_id, subclass_id):
     class_len = len(ITEM_CLASS)
-    subclass_len = len(ITEM_SUBCLASS)
 
-    if class_id >= class_len or subclass_id >= subclass_len:
-        return "Unknown Subclass"
+    if class_id >= class_len:
+        return UNK_SUBCLASS
+
+    subclasses = len(ITEM_SUBCLASS)
+    if class_id >= subclasses:
+        return UNK_SUBCLASS
+
+    subclass_len = len(ITEM_SUBCLASS[class_id])
+    if subclass_id >= subclass_len:
+        return UNK_SUBCLASS
 
     return ITEM_SUBCLASS[class_id][subclass_id]
 
@@ -61,7 +80,7 @@ class Item(models.Model):
     fire_rate = models.IntegerField()
     damage = models.FloatField()
 
-    objects = managers.ItemManager()
+    objects = ItemManager()
 
     @property
     def item_class_str(self):

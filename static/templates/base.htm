@@ -21,18 +21,27 @@
     <div id="menu">
     	<ul class="menulist">
 			{% block menu %}
-            <li class="first"><a href="/item">Items</a></li>
-        	<li><a href="#">Medals</a></li>
-            <li><a href="#">Spacecraft</a></li>
+            <li class="first"><a href="/items">Items</a></li>
+        	<li><a href="/#">Medals</a></li>
+            <li><a href="/#">Spacecraft</a></li>
 			{% endblock %}
         </ul>
     </div>
     <div id="context">
 		{% block context %}
+        {% if menu %}
     	<ul>
-        	<li class="first">Database</li>
-            <li>Items</li>
+            {% for item in menu %}
+                <li {% if forloop.first %}class="first"{% endif %}>
+                {% if item.link %}
+                    <a href="{{ item.link }}">{{ item.name }}</a>
+                {% else %}
+                    {{ item.name }}
+                {% endif %}
+                </li>
+            {% endfor %}
         </ul>
+        {% endif %}
 		{% endblock %}
     </div>
     <div id="content-wrap">
