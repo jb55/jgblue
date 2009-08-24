@@ -14,7 +14,7 @@ var jgblue = {};
  * field - the field name
  * value - the value of the field (equiv to item[field])
  */
-function g_compute_link(data) {
+function g_compute_link(data, sort_val) {
     return ["<a href=\"",g_link(data.template, data.item.id),"\">",data.value,"</a>"].join("");
 };
 
@@ -22,11 +22,25 @@ function g_link(template, id) {
     return "/"+template.id+"/"+id;
 }
 
-function g_compute_class(data) {
-    return ["<div class=\"item_class\">", jgblue.enums.item_class[data.value],"</div>"].join("");
+function g_subclass_name(item_class, item_subclass) {
+    var subclass = jgblue.enums.item_subclass;
+    if ((subclass = subclass[item_class]) != undefined)
+        subclass = subclass[item_subclass];
+    
+    if (subclass == undefined)
+        subclass = "Unknown Subclass (" + item_subclass + ")";
+
+    return subclass;
+}
+
+function g_compute_subclass(data, sort_val) {
+    var subclass = g_subclass_name(data.item.item_class, data.value);
+    sort_val.val = subclass;
+    return ["<div class=\"item_class\">","<a href=\"/items/",data.item.item_class,".",data.item.item_subclass,
+            "\">", subclass,"</a></div>"].join("");
 };
 
-function g_compute_enum(data) {
+function g_compute_enum(data, sort_val) {
     return jgblue.enums[data.field][data.value];
 };
 
@@ -62,12 +76,17 @@ function g_quicksort(array, begin, end, on_field, order) {
  */
 function g_partition(array, begin, end, pivot, on_field, order)
 {
-    var piv = array[pivot][on_field],
+    var piv = array[pivot].computed[on_field] == undefined ?
+                array[pivot][on_field] : array[pivot].computed[on_field],
         store = begin,
-        ix;
+        val, ix;
+
     array.swap(pivot, end-1);
     for(ix=begin; ix<end-1; ++ix) {
-        if(order ? array[ix][on_field]<=piv : array[ix][on_field]>=piv) {
+        /* if the field has been computed, sort on that instead */
+        val = array[ix].computed[on_field] == undefined ? 
+                array[ix][on_field] : array[ix].computed[on_field];
+        if(order ? val <= piv : val >= piv) {
             array.swap(store, ix);
             ++store;
         }
@@ -141,18 +160,29 @@ jgblue.listview = function (options) {
     }
 
     function build_body(items, tab, order) {
-        var i, j, item, col, val, link,
+        var i, j, item, col, val, link, sort_val,
             num_cols = _cols.length,
             num_items = items.length;
 
         /* load all items and put their data into their respective columns */
         for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
+            item.computed = {};
             jgblue.index[item.id] = item;
             link = g_link(_template, item.id);
             tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
             for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
-                val = col.compute == undefined ? item[col.id] : 
-                    col.compute({template: _template, item:item, field: col.id, value: item[col.id]});
+                if(col.compute != undefined) {
+                    sort_val = {val: undefined};
+                    val = col.compute({template: _template, item:item, field: col.id, value: item[col.id]}, sort_val);
+
+                    /* store the computed value in each item so it can be sorted on later */
+                    if( sort_val.val != undefined ) {
+                       item.computed[col.id] = sort_val.val;
+                    }
+                }
+                else
+                    val = item[col.id];
+                
                 tab.push("<td style=\"text-align:",col.align,"\">", val, "</td>");
             }
             tab.push("</tr>");
@@ -169,7 +199,7 @@ jgblue.listview = function (options) {
         var num_cols = _cols.length,
             tab = ["<table width=\"100%\"><thead><tr>"],
             col = _cols[0],
-            url = ["http://dev.jgblue.com/",_template.id,"/?json=1"].join(""),
+            url = window.location.href + "?json=1";
             i=0;
         
         /* build column headers from the template */
@@ -215,7 +245,7 @@ jgblue.listview.templates = {
             {id: "name", name: "Name", type: "text", 
              align: "left", width: "60%", compute:g_compute_link, asc: true, cur_asc: false},
             {id: "level", name: "Level", type: "number", align: "center", width: "10%", asc: false }, 
-            {id: "item_class", name: "Class", type: "number", align: "center", width: "30%", compute:g_compute_class}
+            {id: "item_subclass", name: "Type", type: "number", align: "center", width: "30%", asc: true, compute:g_compute_subclass}
         ]
     }
 };
