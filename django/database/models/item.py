@@ -77,8 +77,13 @@ class Item(models.Model):
     mass = models.IntegerField()
     fire_rate = models.IntegerField()
     damage = models.FloatField()
-
+    
     objects = ItemManager()
+
+    @property
+    def smart_serialized_fields(self):
+        """ Todo: only return needed fields depending on class """
+        return serialized_fields
 
     @property
     def item_class_str(self):

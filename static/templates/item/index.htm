@@ -11,6 +11,9 @@
 
 {% block scripts %}
 <script type="text/javascript">
-	var lv = new jgblue.listview({template:"items", parent:"#listview"});
+    {% autoescape off %}
+    var g_items = {{ json_items }};
+    {% endautoescape %}
+	var lv = new jgblue.listview({template:"items", parent:"#listview"}, g_items);
 </script>
 {% endblock %}

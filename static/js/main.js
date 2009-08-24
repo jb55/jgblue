@@ -105,7 +105,7 @@ jgblue.tooltip = function (options) {
  *  Listview control
  * ----------------------------------
  */
-jgblue.listview = function (options) {
+jgblue.listview = function (options, data) {
 
     /* register events */
     function register_events() {
@@ -209,27 +209,17 @@ jgblue.listview = function (options) {
         }
         tab.push("</tr></thead><tbody id=\"lv-body\">");
         
-        /* our super-cool web 2.0 json XMLHttpRequest, also known as ajax to all the cool kids */
-        $.getJSON(url, function(data) {                             
-            var items = data.items;
-
-            _data = items;
-            build_body(items, tab)
-            
-            tab.push("</tbody></table>");
-            $(_parent).append(tab.join(""));
-            /* I'm done here --Snake */
-        });
+        build_body(_data, tab)
         
-        /* continue loading page, getJSON is async 
-         * so we can't assume it's done at this point 
-         */
+        tab.push("</tbody></table>");
+        $(_parent).append(tab.join(""));
+        /* I'm done here --Snake */
     };
     
     var _template = jgblue.listview.templates[options.template],
         _cols = _template.columns,
         _parent = options.parent,
-        _data;
+        _data = data.items;
 
     build_table();
     register_events();

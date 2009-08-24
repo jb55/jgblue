@@ -1,6 +1,6 @@
 from django.db import models, connection
 from django.core import serializers
-from jgblue.database.models import *
+from jgblue.database.models.serialize import SerializeFields
 
 FORMATS = ('xml', 'json')
 
@@ -21,7 +21,8 @@ class ItemManager(models.Manager):
         if not json:
             return item
         else:
-            return self.serializer.serialize(q, ensure_ascii=False )
+            return self.serializer.serialize(q, ensure_ascii=False, 
+                fields=SerializeFields.Item)
 
 
     def get_items(self, category=(-1,-1), page=1, per_page=25, json=False):
@@ -38,7 +39,8 @@ class ItemManager(models.Manager):
         if not json:
             return q
         else:
-            return self.serializer.serialize(q, ensure_ascii=False)
+            return self.serializer.serialize(q, ensure_ascii=False, 
+                fields=SerializeFields.Item)
 
     def set_latest_item(self, item_id):
         cursor = connection.cursor()

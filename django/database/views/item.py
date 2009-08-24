@@ -15,28 +15,29 @@ def index(request, cls, subcls):
     if has_subcls:
         subcls = int(subcls)
 
+    kwargs = {}
+    category = []
+
+    if has_cls:
+        category.append(cls)
+        if has_subcls:
+            category.append(subcls)
+
+    if len(category) > 0:
+        kwargs["category"] = category
+
+    json_items = Item.objects.get_items(json=True, **kwargs)
+
     if bool(request.REQUEST.get('json')):
-        kwargs = {}
-        category = []
-
-        if has_cls:
-            category.append(cls)
-            if has_subcls:
-                category.append(subcls)
-
-        if len(category) > 0:
-            kwargs["category"] = category
-
-        json_items = Item.objects.get_items(json=True, **kwargs)
         return json_response(json_items)
 
     data = {}
     menu = build_item_context(cls, subcls)
 
     data["menu"] = menu
+    data["json_items"] = "".join(["{items:",json_items,"}"])
 
     return render_to_response("item/index.htm", data)
-
 
 
 
