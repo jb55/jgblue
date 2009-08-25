@@ -65,6 +65,36 @@ p {
 	color: #FF3;
 }
 
+.simple-container {
+    background: #181e22; 
+    padding: 5px;
+}
+
+.jumpboard-items {
+    overflow: hidden;
+}
+
+.jumpboard-items li {
+    margin: 0;
+    display: block;
+    padding: 5px;
+    margin-right: 5px;
+    background: #20252b; 
+    float: left;
+    border: 1px solid #101317;
+}
+
+#jumpboard-layer1 {
+    border-left: 4px solid #20252b;
+    padding-left: 10px;
+}
+
+#jumpboard-layer2 {
+    background: #1e2329;
+    border-left: 4px solid #2f3740;
+    padding-left: 7px;
+}
+
 #listview table {
 	background: #282e36;
 }
@@ -104,6 +134,7 @@ h1 {
 
 #infobox table
 {
+    border-collapse: collapse;
 	width: 100%;
 }
 
@@ -189,8 +220,10 @@ img {
 }
 
 #menu {
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 	background: url(http://dstatic.jgblue.com/img/menu-bg.png) repeat-x;
 	height: 44px;
 	margin-top: 5px;
