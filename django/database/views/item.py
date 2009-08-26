@@ -53,6 +53,7 @@ def detail(request, item_id):
     data["itemid"] = item_id
 
     if item == None:
+        data["menu"] = build_root_context("items")
         return render_to_response("item/notfound.htm", data)
 
     quickinfo = (
@@ -62,7 +63,6 @@ def detail(request, item_id):
     )
 
     menu = build_item_context(item.item_class, item.item_subclass)
-    #menu.add_item(item.name)
 
     data["menu"] = menu
     data["item"] = item
