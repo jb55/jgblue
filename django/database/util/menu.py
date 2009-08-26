@@ -32,13 +32,21 @@ class ContextMenu():
             yield render
 
 
-def build_item_context(cls, subcls):
+def build_root_context(root, name=""):
+
     menu = ContextMenu()
+    
+    if not name:
+        name = root.capitalize()
+
+    menu.add_item(name, "/%s" % root)
+
+def build_item_context(cls, subcls):
 
     has_cls = cls != ""
     has_subcls = subcls != ""
 
-    menu.add_item("Items", "/items")
+    menu = build_root_context()
 
     if has_cls:
         menu.add_item(get_class_name(cls), ''.join(["/items/",str(cls)]))

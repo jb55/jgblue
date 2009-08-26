@@ -11,7 +11,11 @@ jgblue.js: combined.js
 combined.js: main.js
 	cat $^ > ${OUTDIR}$@ 
 
-.PHONY: install
+.PHONY: install clean
 
 install:
 	cp ${INST_TARGETS} ${PUBDIR}
+
+clean:
+	rm ${OUTDIR}*.js
+
