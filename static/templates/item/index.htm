@@ -6,7 +6,23 @@
 {% block infobox %}{% endblock %}
 
 {% block content %}
-<div id="listview"></div>
+<div id="listview">
+    <div id="lv-bar">
+        <div id="lv-page">
+        {% spaceless %}
+            <img class="sprites sprite-fastleft" src="http://dstatic.jgblue.com/img/pixel.gif"/>
+            <img class="sprites sprite-left" src="http://dstatic.jgblue.com/img/pixel.gif"/>
+            <span id="lv-page-txt"></span>
+
+            <img class="sprites sprite-right" src="http://dstatic.jgblue.com/img/pixel.gif"/>
+            <img class="sprites sprite-fastright" src="http://dstatic.jgblue.com/img/pixel.gif"/>
+        {% endspaceless %}
+        </div>
+        <div id="lv-bar-note">note</div>
+    </div>
+</div>
+
+
 {% endblock %}
 
 {% block scripts %}

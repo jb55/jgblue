@@ -70,29 +70,60 @@ p {
     padding: 5px;
 }
 
-.jumpboard-items {
-    overflow: hidden;
+img {
+    border: 0 none;
 }
 
-.jumpboard-items li {
-    margin: 0;
-    display: block;
+.sprites {
+    background-image: url(http://dstatic.jgblue.com/img/sprites.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+
+.sprite-left {
+    background-position: 0 0;
+}
+
+.sprite-left-hl {
+    background-position: 0 -18px;
+}
+
+.sprite-fastleft {
+    background-position: 0 -36px;
+}
+
+.sprite-fastleft-hl {
+    background-position: 0 -54px;
+}
+
+.sprite-right {
+    background-position: 0 -72px;
+}
+
+.sprite-right-hl {
+    background-position: 0 -90px;
+}
+
+.sprite-fastright {
+    background-position: 0 -108px;
+}
+
+.sprite-fastright-hl {
+    background-position: 0 -126px;
+}
+
+#lv-bar {
     padding: 5px;
-    margin-right: 5px;
-    background: #20252b; 
-    float: left;
-    border: 1px solid #101317;
 }
 
-#jumpboard-layer1 {
-    border-left: 4px solid #20252b;
-    padding-left: 10px;
+#lv-page {
+    float: right;
 }
 
-#jumpboard-layer2 {
-    background: #1e2329;
-    border-left: 4px solid #2f3740;
-    padding-left: 7px;
+#lv-page-txt {
+    vertical-align: 5px;
 }
 
 #listview table {
@@ -157,10 +188,6 @@ h2 {
 	border-bottom: 1px dotted #15191e;
 }
 
-img {
-	border: 0px;
-}
-
 #container {
 	width: 960px;
 	margin: 0 auto;
@@ -220,10 +247,8 @@ img {
 }
 
 #menu {
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	background: url(http://dstatic.jgblue.com/img/menu-bg.png) repeat-x;
 	height: 44px;
 	margin-top: 5px;

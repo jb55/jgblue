@@ -33,20 +33,20 @@ class ContextMenu():
 
 
 def build_root_context(root, name=""):
-
     menu = ContextMenu()
     
     if not name:
         name = root.capitalize()
 
     menu.add_item(name, "/%s" % root)
+    return menu
 
 def build_item_context(cls, subcls):
 
     has_cls = cls != ""
     has_subcls = subcls != ""
 
-    menu = build_root_context()
+    menu = build_root_context("items")
 
     if has_cls:
         menu.add_item(get_class_name(cls), ''.join(["/items/",str(cls)]))
