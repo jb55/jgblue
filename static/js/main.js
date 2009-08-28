@@ -146,6 +146,8 @@ jgblue.listview = function (options, data) {
         _arrows.all = $("#lv-page .sprites");
         _arrows.hasarrows = true;
 
+        _arrows.all.css("cursor", "pointer");
+
         _arrows.fastleft.hover(function() {
             $(this).attr("class","sprites sprite-fastleft-hl");
         }, function () {
