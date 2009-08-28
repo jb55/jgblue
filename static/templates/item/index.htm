@@ -2,14 +2,34 @@
 
 {% block title %}JGE Items{% endblock %}
 
-{% block context %}
-<ul>
-	<li class="first">Database</li>
-	<li>Items</li>
-</ul>
-{% endblock %}
 
 {% block infobox %}{% endblock %}
 
 {% block content %}
+<div id="listview">
+    <div id="lv-bar">
+        <div id="lv-page">
+        {% spaceless %}
+            <img class="sprites sprite-fastleft" src="http://static.jgblue.com/img/pixel.gif"/>
+            <img class="sprites sprite-left" src="http://static.jgblue.com/img/pixel.gif"/>
+            <span id="lv-page-txt"></span>
+
+            <img class="sprites sprite-right" src="http://static.jgblue.com/img/pixel.gif"/>
+            <img class="sprites sprite-fastright" src="http://static.jgblue.com/img/pixel.gif"/>
+        {% endspaceless %}
+        </div>
+        <div id="lv-bar-note">note</div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    {% autoescape off %}
+    var g_items = {{ json_items }};
+    {% endautoescape %}
+	var lv = new jgblue.listview({template:"items", parent:"#listview"}, g_items);
+</script>
 {% endblock %}

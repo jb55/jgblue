@@ -1,5 +1,5 @@
 from django.db import models
-import jgblue.database.managers as managers
+from jgblue.database.managers.item import ItemManager
 
 ITEM_CLASS = (
     'Gun',
@@ -27,12 +27,29 @@ IMAGE_TARGET = (
     (3, 'Spacecraft'),
 )
 
+UNK_CLASS = "Unknown Class (%d)"
+UNK_SUBCLASS = "Unknown Subclass (%d)"
+
+def get_class_name(class_id):
+
+    if class_id > len(ITEM_CLASS) or class_id < 0:
+        return UNK_CLASS % class_id
+    else:
+        return ITEM_CLASS[class_id]
+
 def get_subclass_name(class_id, subclass_id):
     class_len = len(ITEM_CLASS)
-    subclass_len = len(ITEM_SUBCLASS)
 
-    if class_id >= class_len or subclass_id >= subclass_len:
-        return "Unknown Subclass"
+    if class_id >= class_len:
+        return UNK_SUBCLASS % subclass_id
+
+    subclasses = len(ITEM_SUBCLASS)
+    if class_id >= subclasses:
+        return UNK_SUBCLASS % subclass_id
+
+    subclass_len = len(ITEM_SUBCLASS[class_id])
+    if subclass_id >= subclass_len:
+        return UNK_SUBCLASS % subclass_id
 
     return ITEM_SUBCLASS[class_id][subclass_id]
 
@@ -60,8 +77,13 @@ class Item(models.Model):
     mass = models.IntegerField()
     fire_rate = models.IntegerField()
     damage = models.FloatField()
+    
+    objects = ItemManager()
 
-    objects = managers.ItemManager()
+    @property
+    def smart_serialized_fields(self):
+        """ Todo: only return needed fields depending on class """
+        return serialized_fields
 
     @property
     def item_class_str(self):

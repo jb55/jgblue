@@ -65,6 +65,67 @@ p {
 	color: #FF3;
 }
 
+.simple-container {
+    background: #181e22; 
+    padding: 5px;
+}
+
+img {
+    border: 0 none;
+}
+
+.sprites {
+    background-image: url(http://static.jgblue.com/img/sprites.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+
+.sprite-left {
+    background-position: 0 0;
+}
+
+.sprite-left-hl {
+    background-position: 0 -18px;
+}
+
+.sprite-fastleft {
+    background-position: 0 -36px;
+}
+
+.sprite-fastleft-hl {
+    background-position: 0 -54px;
+}
+
+.sprite-right {
+    background-position: 0 -72px;
+}
+
+.sprite-right-hl {
+    background-position: 0 -90px;
+}
+
+.sprite-fastright {
+    background-position: 0 -108px;
+}
+
+.sprite-fastright-hl {
+    background-position: 0 -126px;
+}
+
+#lv-bar {
+    padding: 5px;
+}
+
+#lv-page {
+    float: right;
+}
+
+#lv-page-txt {
+    vertical-align: 5px;
+}
+
 #listview table {
 	background: #282e36;
 }
@@ -104,6 +165,7 @@ h1 {
 
 #infobox table
 {
+    border-collapse: collapse;
 	width: 100%;
 }
 
@@ -124,10 +186,6 @@ h2 {
 	letter-spacing: -1px;
 	padding-bottom: 4px;
 	border-bottom: 1px dotted #15191e;
-}
-
-img {
-	border: 0px;
 }
 
 #container {
