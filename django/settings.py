@@ -10,8 +10,11 @@ logging.basicConfig(
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# Email
+SERVER_EMAIL="django@jgblue.com"
+
 ADMINS = (
-    # ('Bill Casarin', 'jb55@jgblue.com'),
+    ('Admins', 'admins@jgblue.com'),
 )
 
 MANAGERS = ADMINS
