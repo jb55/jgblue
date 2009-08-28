@@ -43,6 +43,10 @@ def index(request, cls, subcls):
 
 def detail(request, item_id):
     
+    if bool(request.REQUEST.get('json')):
+       json_item = Item.objects.get_item(item_id, json=True)
+       return json_response(json_item) 
+
     item = Item.objects.get_item(item_id)
 
     data = {}
