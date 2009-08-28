@@ -60,7 +60,7 @@ CREATE TABLE `auth_message` (
   `message` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `auth_message_user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `django_admin_log` (
   PRIMARY KEY  (`id`),
   KEY `django_admin_log_user_id` (`user_id`),
   KEY `django_admin_log_content_type_id` (`content_type_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -221,7 +221,6 @@ CREATE TABLE `item` (
   `date_added` datetime NOT NULL,
   `is_latest` tinyint(1) NOT NULL default '0',
   `revision_note` varchar(128) default NULL,
-  `note` varchar(128) default NULL,
   `name` varchar(80) NOT NULL,
   `item_class` int(11) NOT NULL default '0',
   `item_subclass` int(11) NOT NULL default '0',
@@ -325,4 +324,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-08-19 19:30:11
+-- Dump completed on 2009-08-11 19:46:48

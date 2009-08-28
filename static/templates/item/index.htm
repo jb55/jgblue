@@ -2,15 +2,14 @@
 
 {% block title %}JGE Items{% endblock %}
 
+{% block context %}
+<ul>
+	<li class="first">Database</li>
+	<li>Items</li>
+</ul>
+{% endblock %}
 
 {% block infobox %}{% endblock %}
 
 {% block content %}
-<div id="listview"></div>
-{% endblock %}
-
-{% block scripts %}
-<script type="text/javascript">
-	var lv = new jgblue.listview({template:"items", parent:"#listview"});
-</script>
 {% endblock %}
