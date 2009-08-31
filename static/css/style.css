@@ -169,13 +169,16 @@ h1 {
 	width: 100%;
 }
 
-#infobox td
+#infobox td, #infobox th
 {
-	width: 50%;
 	padding: 4px 4px 4px 4px;
 }
 
-#infobox tr.alt td {
+#infobox th {
+    white-space: nowrap;
+}
+
+#infobox .alt {
 	background-color: #2f363f;
 }
 

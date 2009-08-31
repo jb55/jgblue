@@ -2,7 +2,10 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from jgblue.database.models.item import *
 from jgblue.database.util.menu import *
-from jgblue.database.util.responses import json_response
+from jgblue.database.util.responses import json_response, serialized_response
+from jgblue.database.util.serialize import serialize
+
+MAX_VIEW_ITEMS = 200
 
 # /items/cls.subcls
 def index(request, cls, subcls):
@@ -26,16 +29,31 @@ def index(request, cls, subcls):
     if len(category) > 0:
         kwargs["category"] = category
 
-    json_items = Item.objects.get_items(json=True, **kwargs)
+    items = Item.objects.get_items(**kwargs)
+    items_total = items.count()
+    items_shown = MAX_VIEW_ITEMS
 
-    if bool(request.REQUEST.get('json')):
-        return json_response(json_items)
+    if items_total < MAX_VIEW_ITEMS:
+        items_shown = items_total
+
+    json_items = serialize(items, items_shown)
+
+    format = request.REQUEST.get('format') 
+    if bool(format):
+        serialized_items = None
+        if format != "json":
+            serialized_items = serialize(items, items_shown, format=format)
+        else:
+            serialized_items = json_items
+        return serialized_response(serialized_items, format)
 
     data = {}
     menu = build_item_context(cls, subcls)
 
     data["menu"] = menu
-    data["json_items"] = "".join(["{items:",json_items,"}"])
+    data["items_displayed"] = items_shown
+    data["items_total"] = items_total
+    data["json_items"] = json_items
 
     return render_to_response("item/index.htm", data)
 
@@ -43,11 +61,13 @@ def index(request, cls, subcls):
 
 def detail(request, item_id):
     
-    if bool(request.REQUEST.get('json')):
-       json_item = Item.objects.get_item(item_id, json=True)
-       return json_response(json_item) 
+    format = request.REQUEST.get('format')
 
-    item = Item.objects.get_item(item_id)
+    if bool(format):
+       serialized_item = serialize(Item.objects.get_item(item_id), 1, format=format)
+       return serialized_response(serialized_item, format) 
+
+    item = Item.objects.get_item(item_id)[0]
 
     data = {}
     data["itemid"] = item_id
@@ -69,3 +89,4 @@ def detail(request, item_id):
     data["quickinfo"] = quickinfo
              
     return render_to_response("item/detail.htm", data)
+

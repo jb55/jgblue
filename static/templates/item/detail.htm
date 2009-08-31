@@ -8,7 +8,7 @@
 <table>
 {% for label, value in quickinfo %}
 {% if value %}
-<tr {% cycle '' 'class="alt"' %}><td>{{ label }}</td><td>{{ value }}</td></tr>
+<tr {% cycle '' 'class="alt"' %}><th>{{ label }}:</th><td>{{ value }}</td></tr>
 {% endif %}
 {% endfor %}
 </table>

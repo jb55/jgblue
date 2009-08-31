@@ -309,7 +309,6 @@ jgblue.listview = function (options, data) {
         if( last > _count )
             last = _count;
 
-        _note.text(len + " items found");
         _page_txt.text(first + " - " + + last + " of " + len);
 
         _arrows.all.css("display", "inline");
