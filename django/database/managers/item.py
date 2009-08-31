@@ -1,7 +1,5 @@
 from django.db import models, connection
 from django.core import serializers
-from jgblue.database.models.serialize import SerializeFields
-
 
 class ItemManager(models.Manager):
     

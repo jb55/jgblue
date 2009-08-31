@@ -21,11 +21,6 @@ ITEM_SUBCLASS = (
     ITEM_GUN_CLASS,
 )
 
-IMAGE_TARGET = (
-    (1, 'Item'),
-    (2, 'Medal'),
-    (3, 'Spacecraft'),
-)
 
 UNK_CLASS = "Unknown Class (%d)"
 UNK_SUBCLASS = "Unknown Subclass (%d)"
@@ -83,7 +78,7 @@ class Item(models.Model):
     @property
     def smart_serialized_fields(self):
         """ Todo: only return needed fields depending on class """
-        return serialized_fields
+        return ""
 
     @property
     def item_class_str(self):
@@ -103,19 +98,4 @@ class Item(models.Model):
     class Meta:
         db_table = "item"
         ordering = ['id']
-
-class ItemImage(models.Model):
-    id = models.AutoField(primary_key=True)
-    target_id = models.IntegerField()
-    target_type = models.IntegerField(choices=IMAGE_TARGET)
-    user_id = models.IntegerField()
-    date_added = models.DateTimeField()
-    uuid = models.CharField(max_length=32)
-    description = models.CharField(max_length=200)
-    
-    def __unicode__(self):
-        return " ".join([self.uuid, self.description])
-
-    class Meta:
-        db_table = "item_images"
 
