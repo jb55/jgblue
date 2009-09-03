@@ -67,7 +67,7 @@ p {
 
 .simple-container {
     background: #181e22; 
-    padding: 5px;
+    padding: 6px;
 }
 
 img {
@@ -126,7 +126,7 @@ img {
     vertical-align: 5px;
 }
 
-#listview table {
+#listview table, .tab-page, .tabs div {
 	background: #282e36;
 }
 
@@ -152,7 +152,7 @@ img {
     background-color: #2F3740;
 }
 
-h1 {
+h1, h2 {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #0066ff;
 	/*color: #EEE;*/
@@ -162,6 +162,16 @@ h1 {
 	padding-bottom: 3px;
 	margin-bottom: 12px;
 }
+
+h2 {
+    margin-top: 8px;
+    font-size: 18px;
+}
+
+h3 {
+    margin: 0 0 8px 0;
+}
+    
 
 #infobox table
 {
@@ -182,7 +192,7 @@ h1 {
 	background-color: #2f363f;
 }
 
-h2 {
+#infobox h5 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 120%;
 	margin-bottom:8px;
@@ -191,11 +201,15 @@ h2 {
 	border-bottom: 1px dotted #15191e;
 }
 
-#container {
-	width: 960px;
-	margin: 0 auto;
-	margin-top: 50px;
+#container-wrapper {
+	min-width: 960px;
+    max-width: 1264px;
+    margin: auto;
 	position: relative;
+}
+
+#container {
+	margin: 15px 8px 8px 8px;
 }
 
 #banner img {
@@ -215,7 +229,7 @@ h2 {
 
 #context li:before
 {
-	content: "\00BB \0020";
+	content: "\0020 \00BB \0020";
 }
 
 #context li.first:before
@@ -247,6 +261,35 @@ h2 {
 #menu ul {
 	list-style-position:outside;
 	list-style-type:none;
+}
+
+.tabs-container {
+    height: 30px;  
+}
+
+.tab-page {
+    padding: 8px;
+    
+}
+
+.tabs {
+	list-style-position:outside;
+	list-style-type:none;
+}
+
+.tabs li {
+	float: left;
+    margin: 0 3px 0 0;
+    height: 30px;
+}
+
+.tabs div {
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-webkit-border-top-left-radius: 5px;
+    padding: 0 5px;
+    line-height: 30px;
 }
 
 #menu {

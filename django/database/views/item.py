@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from jgblue.database.models.item import *
 from jgblue.database.util.menu import *
 from jgblue.database.util.responses import json_response, serialized_response
-from jgblue.database.util.serialize import serialize
+from jgblue.database.util.serialize import *
 
 MAX_VIEW_ITEMS = 200
 
@@ -36,15 +36,11 @@ def index(request, cls, subcls):
     if items_total < MAX_VIEW_ITEMS:
         items_shown = items_total
 
-    json_items = serialize(items, items_shown)
+    json_items = serialize(items, items_shown, fields=SerializeFields.ItemIndex)
 
     format = request.REQUEST.get('format') 
     if bool(format):
-        serialized_items = None
-        if format != "json":
-            serialized_items = serialize(items, items_shown, format=format)
-        else:
-            serialized_items = json_items
+        serialized_items = serialize(items, items_shown, format=format)
         return serialized_response(serialized_items, format)
 
     data = {}
@@ -82,7 +78,7 @@ def detail(request, item_id):
         ("Revision Note", item.revision_note),
     )
 
-    menu = build_item_context(item.item_class, item.item_subclass)
+    menu = build_item_context(item.item_class, item.item_subclass, item)
 
     data["menu"] = menu
     data["item"] = item

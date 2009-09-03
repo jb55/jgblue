@@ -10,6 +10,7 @@
 
 <body>
 
+<div id="container-wrapper">
 <div id="container">
     <div id="banner-left">
 		{% block banner %}
@@ -46,7 +47,7 @@
         {% endif %}
 		{% endblock %}
     </div>
-    <div id="content-wrap">
+    <div id="content-wrap" class="simple-container">
     	<div id="content">
 	 		{% block infobox %}
 			<div id="infobox">
@@ -57,6 +58,7 @@
 		</div>
     </div>
 </div> 
+</div>
 
 {% block scripts %}{% endblock %}
 <script type="text/javascript">

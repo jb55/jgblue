@@ -41,7 +41,7 @@ def build_root_context(root, name=""):
     menu.add_item(name, "/%s" % root)
     return menu
 
-def build_item_context(cls, subcls):
+def build_item_context(cls, subcls, item=None):
 
     has_cls = cls != ""
     has_subcls = subcls != ""
@@ -52,6 +52,8 @@ def build_item_context(cls, subcls):
         menu.add_item(get_class_name(cls), ''.join(["/items/",str(cls)]))
         if has_subcls:
             menu.add_item(get_subclass_name(cls, subcls), ''.join(["/items/",str(cls),".",str(subcls)]))
+            if item:
+                menu.add_item(item.name, ''.join(["/item/",str(item.id)]))
 
     return menu
 

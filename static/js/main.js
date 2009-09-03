@@ -14,21 +14,24 @@ var jgblue = {};
  * field - the field name
  * value - the value of the field (equiv to item[field])
  */
-function g_compute_link(data, sort_val) {
-    return ["<a href=\"",g_link(data.template, data.item.id),"\">",data.value,"</a>"].join("");
-};
 
 function g_link(template, id) {
-    return "/"+template.id+"/"+id;
+    return "/" + template.id + "/" + id;
+}
+
+function g_compute_link(data, sort_val) {
+    return ["<a href=\"", g_link(data.template, data.item.id), "\">", data.value, "</a>"].join("");
 }
 
 function g_subclass_name(item_class, item_subclass) {
     var subclass = jgblue.enums.item_subclass;
-    if ((subclass = subclass[item_class]) != undefined)
+    if ((subclass = subclass[item_class]) !== undefined) {
         subclass = subclass[item_subclass];
+    }
     
-    if (subclass == undefined)
+    if (subclass === undefined) {
         subclass = "Unknown Subclass (" + item_subclass + ")";
+    }
 
     return subclass;
 }
@@ -36,20 +39,45 @@ function g_subclass_name(item_class, item_subclass) {
 function g_compute_subclass(data, sort_val) {
     var subclass = g_subclass_name(data.item.item_class, data.value);
     sort_val.val = subclass;
-    return ["<div class=\"item_class\">","<a href=\"/items/",data.item.item_class,".",data.item.item_subclass,
-            "\">", subclass,"</a></div>"].join("");
-};
+    return ["<div class=\"item_class\">", "<a href=\"/items/", data.item.item_class, ".", data.item.item_subclass,
+            "\">", subclass, "</a></div>"].join("");
+}
 
 function g_compute_enum(data, sort_val) {
     return jgblue.enums[data.field][data.value];
-};
+}
 
 /* add swap to array */
-Array.prototype.swap=function(a, b)
+Array.prototype.swap = function (a, b)
 {
-    var tmp=this[a];
-    this[a]=this[b];
-    this[b]=tmp;
+    var tmp = this[a];
+    this[a] = this[b];
+    this[b] = tmp;
+};
+
+
+/*
+ * partition, used in the quicksort algorithm
+ */
+function g_partition(array, begin, end, pivot, on_field, order)
+{
+    var piv = array[pivot].computed[on_field] === undefined ?
+                array[pivot][on_field] : array[pivot].computed[on_field],
+        store = begin,
+        val, ix;
+
+    array.swap(pivot, end - 1);
+    for (ix = begin; ix < end - 1; ++ix) {
+        /* if the field has been computed, sort on that instead */
+        val = array[ix].computed[on_field] === undefined ? 
+                array[ix][on_field] : array[ix].computed[on_field];
+        if (order ? val <= piv : val >= piv) {
+            array.swap(store, ix);
+            ++store;
+        }
+    }
+    array.swap(end - 1, store);
+    return store;
 }
 
 /* 
@@ -61,39 +89,15 @@ Array.prototype.swap=function(a, b)
  */
 function g_quicksort(array, begin, end, on_field, order) {
 
-    if(end-1>begin) {
-        var pivot=begin+Math.floor(Math.random()*(end-begin));
+    if (end - 1 > begin) {
+        var pivot = begin + Math.floor(Math.random() * (end - begin));
 
-        pivot=g_partition(array, begin, end, pivot, on_field, order);
+        pivot = g_partition(array, begin, end, pivot, on_field, order);
 
         g_quicksort(array, begin, pivot, on_field, order);
-        g_quicksort(array, pivot+1, end, on_field, order);
+        g_quicksort(array, pivot + 1, end, on_field, order);
     }
-};
-
-/*
- * partition, used in the quicksort algorithm
- */
-function g_partition(array, begin, end, pivot, on_field, order)
-{
-    var piv = array[pivot].computed[on_field] == undefined ?
-                array[pivot][on_field] : array[pivot].computed[on_field],
-        store = begin,
-        val, ix;
-
-    array.swap(pivot, end-1);
-    for(ix=begin; ix<end-1; ++ix) {
-        /* if the field has been computed, sort on that instead */
-        val = array[ix].computed[on_field] == undefined ? 
-                array[ix][on_field] : array[ix].computed[on_field];
-        if(order ? val <= piv : val >= piv) {
-            array.swap(store, ix);
-            ++store;
-        }
-    }
-    array.swap(end-1, store);
-    return store;
-};
+}
 
 /* data index */
 jgblue.index = {};
@@ -128,9 +132,9 @@ jgblue.listview = function (options, data) {
             var col, col_id, saved_asc;
             col_id = $(this).attr("id").slice(4);
             col = get_col(col_id);
-            if( col.asc == undefined )
+            if( col.asc === undefined )
                 col.asc == true;
-            if( col.cur_asc == undefined )
+            if( col.cur_asc === undefined )
                 col.cur_asc = col.asc;
             sort(col_id, col.cur_asc);
             saved_asc = col.cur_asc;
@@ -309,7 +313,7 @@ jgblue.listview = function (options, data) {
         if( last > _count )
             last = _count;
 
-        _page_txt.text(first + " - " + + last + " of " + len);
+        _page_txt.text(first + " - " + last + " of " + len);
 
         _arrows.all.css("display", "inline");
 
@@ -348,7 +352,7 @@ jgblue.listview = function (options, data) {
         
         tab.push("</tbody></table>");
         _parent.append(tab.join(""));
-    };
+    }
     
     var _template = jgblue.listview.templates[options.template],
         _cols = _template.columns,
@@ -365,7 +369,7 @@ jgblue.listview = function (options, data) {
         _arrows = {};
 
     _last_page = Math.ceil(data.items.length / _per_page);
-    if( _last_page == 0 )
+    if( _last_page === 0 )
         _last_page = 1;
 
     _note = $("#lv-bar-note");
