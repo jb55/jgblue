@@ -105,11 +105,12 @@ jgblue.tooltip = function (options) {
  *  Listview control
  * ----------------------------------
  */
-jgblue.listview = function (options) {
+jgblue.listview = function (options, data) {
 
     /* register events */
     function register_events() {
-        var selector = $(_parent + " tr");
+        
+        var selector = $(_parent_str + " tr");
 
         /* listview row highlight */
         selector.live("mouseover", function() {
@@ -136,6 +137,84 @@ jgblue.listview = function (options) {
             reset_sort_orders();
             col.cur_asc = !saved_asc;
         });
+
+        /* one time only bindings */
+        _arrows.fastleft = $("#lv-page .sprite-fastleft");
+        _arrows.left = $("#lv-page .sprite-left");
+        _arrows.right = $("#lv-page .sprite-right");
+        _arrows.fastright = $("#lv-page .sprite-fastright");
+        _arrows.all = $("#lv-page .sprites");
+        _arrows.hasarrows = true;
+
+        _arrows.fastleft.hover(function() {
+            $(this).attr("class","sprites sprite-fastleft-hl");
+        }, function () {
+            $(this).attr("class","sprites sprite-fastleft");
+        });
+
+        _arrows.left.hover(function() {
+            $(this).attr("class","sprites sprite-left-hl");
+        }, function () {
+            $(this).attr("class","sprites sprite-left");
+        });
+
+        _arrows.right.hover(function() {
+            $(this).attr("class","sprites sprite-right-hl");
+        }, function () {
+            $(this).attr("class","sprites sprite-right");
+        });
+
+        _arrows.fastright.hover(function() {
+            $(this).attr("class","sprites sprite-fastright-hl");
+        }, function () {
+            $(this).attr("class","sprites sprite-fastright");
+        });
+
+        _arrows.left.bind("click", function() {
+            switch_page(-1);
+        });
+
+        _arrows.right.bind("click", function() {
+            switch_page(1);
+        });
+
+        _arrows.fastright.bind("click", function() {
+            switch_page(2);
+        });
+
+        _arrows.fastleft.bind("click", function() {
+            switch_page(-2);
+        });
+    }
+
+    function switch_page(where){
+        switch(where) {
+        case 1:
+            if( _cur_page + 1 > _last_page )
+                return;
+            _cur_page++;
+            break;
+        case -1:
+            if( _cur_page - 1 < 1 )
+                return;
+            _cur_page--;
+            break;
+        case 2:
+            _cur_page = _last_page;
+            break;
+        case -2:
+            _cur_page = 1;
+            break;
+        }
+
+        rebuild_body();
+    }
+
+    function rebuild_body() {
+        var body = [];
+        _body.empty();
+        build_body(_data, body);
+        _body.append(body.join(""));
     }
 
     function get_col(id) {
@@ -151,12 +230,45 @@ jgblue.listview = function (options) {
     }
 
     function sort(column_id, order) {
-        var tbody = $("#lv-body"),
-            body = [];
-        tbody.empty();
+        var body = [];
+        _body.empty();
         g_quicksort(_data, 0, _data.length, column_id, order);
         build_body(_data, body);
-        tbody.append(body.join(""));
+        _body.append(body.join(""));
+    }
+
+    /** 
+     * builds computed sort values so sort will work on computed fields
+     * this function indexes items in the jgblue.index as well
+     * XXX: this is kind of hacky considering that dynamic sorting
+     * fields will not work as expected.
+     *
+     * So basically:
+     * - Quicksort the entire list (200?)
+     * - Only compute the first _per_page(50) fields (thanks to this fn),
+     *   otherwise we'd have to compute 200 fields every time. got it?
+     */
+    function compute_sort_vals(items) {
+        var i, j, item, col, link, sort_val,
+            num_cols = _cols.length,
+            num_items = items.length;
+
+        for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
+            item.computed = {};
+            jgblue.index[item.id] = item;
+            for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
+                if(col.compute != undefined) {
+                    sort_val = {val: undefined};
+                    col.compute({template: _template, item:item, field: col.id, value: item[col.id]}, sort_val);
+
+                    /* store the computed value in each item so it can be sorted on later */
+                    if( sort_val.val != undefined ) {
+                       item.computed[col.id] = sort_val.val;
+                    }
+                }
+            }
+        }
+        
     }
 
     function build_body(items, tab, order) {
@@ -164,28 +276,49 @@ jgblue.listview = function (options) {
             num_cols = _cols.length,
             num_items = items.length;
 
+        update_labels();
+
+        sort_val = { val: undefined };
         /* load all items and put their data into their respective columns */
-        for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
-            item.computed = {};
-            jgblue.index[item.id] = item;
+        i = (_cur_page-1) * _per_page;
+        item = items[i];
+        for(; i < num_items && i < (_cur_page*_per_page); ++i, item=items[i]) {
             link = g_link(_template, item.id);
             tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
             for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
-                if(col.compute != undefined) {
-                    sort_val = {val: undefined};
+                if(col.compute != undefined)
                     val = col.compute({template: _template, item:item, field: col.id, value: item[col.id]}, sort_val);
-
-                    /* store the computed value in each item so it can be sorted on later */
-                    if( sort_val.val != undefined ) {
-                       item.computed[col.id] = sort_val.val;
-                    }
-                }
                 else
                     val = item[col.id];
                 
                 tab.push("<td style=\"text-align:",col.align,"\">", val, "</td>");
             }
             tab.push("</tr>");
+        }
+
+    }
+
+    function update_labels() {
+        var len = _count,
+            first, last;
+
+        first = (_per_page*(_cur_page-1)) + 1;
+        last = _per_page * _cur_page;
+        if( last > _count )
+            last = _count;
+
+        _note.text(len + " items found");
+        _page_txt.text(first + " - " + + last + " of " + len);
+
+        _arrows.all.css("display", "inline");
+
+        if( _cur_page == 1 ) {
+            _arrows.left.css("display", "none");
+            _arrows.fastleft.css("display", "none");
+        }
+        if( _cur_page == _last_page ) {
+            _arrows.right.css("display", "none");
+            _arrows.fastright.css("display", "none");
         }
 
     }
@@ -199,9 +332,10 @@ jgblue.listview = function (options) {
         var num_cols = _cols.length,
             tab = ["<table width=\"100%\"><thead><tr>"],
             col = _cols[0],
-            url = window.location.href + "?json=1";
+            url = window.location.href + "?json=1",
             i=0;
         
+
         /* build column headers from the template */
         for(i=0; i < num_cols; ++i, col=_cols[i]) {
             tab.push("<th style=\"width:", col.width,";text-align:", 
@@ -209,30 +343,37 @@ jgblue.listview = function (options) {
         }
         tab.push("</tr></thead><tbody id=\"lv-body\">");
         
-        /* our super-cool web 2.0 json XMLHttpRequest, also known as ajax to all the cool kids */
-        $.getJSON(url, function(data) {                             
-            var items = data.items;
-
-            _data = items;
-            build_body(items, tab)
-            
-            tab.push("</tbody></table>");
-            $(_parent).append(tab.join(""));
-            /* I'm done here --Snake */
-        });
+        build_body(_data, tab)
         
-        /* continue loading page, getJSON is async 
-         * so we can't assume it's done at this point 
-         */
+        tab.push("</tbody></table>");
+        _parent.append(tab.join(""));
     };
     
     var _template = jgblue.listview.templates[options.template],
         _cols = _template.columns,
-        _parent = options.parent,
-        _data;
+        _count = data.items.length,
+        _parent_str = options.parent,
+        _parent = $(options.parent),
+        _data = data.items,
+        _per_page = 50,
+        _cur_page = 1,
+        _last_page, 
+        _note,
+        _body,
+        _page_txt,
+        _arrows = {};
 
-    build_table();
+    _last_page = Math.ceil(data.items.length / _per_page);
+    if( _last_page == 0 )
+        _last_page = 1;
+
+    _note = $("#lv-bar-note");
+    _page_txt = $("#lv-page-txt");
+
+    compute_sort_vals(_data);
     register_events();
+    build_table();
+    _body = $("#lv-body");
 };
 
 jgblue.listview.templates = {
