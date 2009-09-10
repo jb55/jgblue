@@ -1,0 +1,20 @@
+import os
+
+env = Environment()
+Export('env')
+
+dirs = [
+    "fcollada"
+]
+
+buildDir = 'build'
+
+SConscript("SConscript", build_dir=buildDir, duplicate=0)
+
+for dir in dirs:
+    SConscript(
+        dir + os.sep + 'SConscript',
+        build_dir = buildDir + os.sep + dir,
+        duplicate = 0
+        )
+

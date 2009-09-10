@@ -133,9 +133,11 @@ public:
 // defined as (unsigned) long, but now that they are defined as (unsigned) int,
 // the following definitions would conflict with the definitions above.
 
+#if 0
 #ifndef OS_WINDOWS
 	inline void append(unsigned long i) { append(static_cast<uint32>(i)); } /**< See above. */
 	inline void append(long i) { append(static_cast<uint32>(i)); } /**< See above. */
+#endif
 #endif
 
 #if 0

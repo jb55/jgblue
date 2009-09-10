@@ -307,7 +307,7 @@ fstring FUFileManager::ExtractNetworkHostname(fstring& filename)
 	// UNC network paths are only supported on WIN32, right now.
 	if (filename.size() > 2 && (filename[0] == '/' || filename[0] == '\\') && filename[1] == filename[0])
 	{
-		size_t nextSlash = min(filename.find('/', 2), filename.find('\\', 2));
+		size_t nextSlash = std::min(filename.find('/', 2), filename.find('\\', 2));
 		FUAssert(nextSlash != fstring::npos, return hostname); // The UNC patch should always have at least one network path
 		hostname = filename.substr(2, nextSlash - 2);
 		filename.erase(0, nextSlash); // Keep the slash to indicate absolute path.
@@ -400,7 +400,7 @@ fstring FUFileManager::GetApplicationFolderName()
 		}
 		else
 		{
-			path[min(1023u, size)] = '\0';
+			path[min(size_t(1023), size)] = '\0';
 			int i = stat (path, &stat_buf);
 			if (i == -1) break; 
 			else if (!S_ISLNK(stat_buf.st_mode)) break;

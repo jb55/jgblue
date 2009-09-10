@@ -1,0 +1,7 @@
+Import('env')
+
+files = [
+    "exporter.cpp",
+]
+
+env.Program("exporter", files)
