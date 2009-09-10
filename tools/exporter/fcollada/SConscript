@@ -434,9 +434,7 @@ include_dirs = [
     'LibXML/include',
 ]
 
-defines = [
-    'RETAIL',
-]
+defines = ['RETAIL']
 
 if 'linux' in sys.platform:
     defines += ['LINUX']

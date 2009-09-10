@@ -1,13 +1,16 @@
 import os
+import sys
 
-env = Environment()
+
+env = Environment() 
 Export('env')
 
 dirs = [
     "fcollada"
 ]
 
-buildDir = 'build'
+buildDir = "build"
+env.Replace(BUILD_DIR = buildDir)
 
 SConscript("SConscript", build_dir=buildDir, duplicate=0)
 

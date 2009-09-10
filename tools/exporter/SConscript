@@ -1,7 +1,21 @@
+import sys
+
 Import('env')
 
 files = [
     "exporter.cpp",
 ]
 
-env.Program("exporter", files)
+inc = ['fcollada']
+
+defines = []
+
+if 'linux' in sys.platform:
+    defines.append("LINUX")
+
+env.Program("exporter", files, 
+    LIBS = ['fcollada'], 
+    CPPDEFINES = defines,
+    LIBPATH = ['fcollada'],
+    CPPPATH = ['fcollada', 'fcollada/LibXML/include']) 
+
