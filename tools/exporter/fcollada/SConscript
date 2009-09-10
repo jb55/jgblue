@@ -434,9 +434,9 @@ include_dirs = [
     'LibXML/include',
 ]
 
-defines = ['RETAIL']
+defines = ['RETAIL', 'UNICODE']
 
 if 'linux' in sys.platform:
     defines += ['LINUX']
 
-env.Library('fcollada', files, CPPDEFINES=defines, CPPPATH=include_dirs)
+env.Library('fcollada', files, CPPDEFINES=defines, CPPPATH=include_dirs) 

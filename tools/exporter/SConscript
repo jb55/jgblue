@@ -8,14 +8,18 @@ files = [
 
 inc = ['fcollada']
 
-defines = []
+defines = ['UNICODE']
 
 if 'linux' in sys.platform:
     defines.append("LINUX")
 
 env.Program("exporter", files, 
-    LIBS = ['fcollada'], 
+    LIBS = ['fcollada', 'dl'], 
     CPPDEFINES = defines,
     LIBPATH = ['fcollada'],
-    CPPPATH = ['fcollada', 'fcollada/LibXML/include']) 
+    CPPPATH = [
+        'fcollada', 
+        'fcollada/LibXML/include',
+        'fcollada/FCDocument',
+        ]) 
 
