@@ -4,6 +4,12 @@ Import('env')
 
 files = [
     "exporter.cpp",
+    "exporter.h",
+    "main.cpp",
+    "asset.h",
+    "asset.cpp",
+    "jumpgate_asset.h",
+    "jumpgate_asset.cpp",
 ]
 
 inc = ['fcollada']
@@ -21,5 +27,6 @@ env.Program("exporter", files,
         'fcollada', 
         'fcollada/LibXML/include',
         'fcollada/FCDocument',
+        'fcollada/FUtils',
         ]) 
 

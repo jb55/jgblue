@@ -37,48 +37,105 @@
 <!-- Don't render the textarea -->
 <div style="display:none">
 <!-- Start of effect -->
-<textarea id="effect">
-  // World View Projection matrix that will transform the input vertices
-  // to screen space.
-  float4x4 worldViewProjection : WorldViewProjection;
+<textarea id="effect" name="effect" cols="80" rows="20"
+       style="display: none;">
+uniform float4x4 world : WORLD;
+uniform float4x4 worldViewProjection : WORLDVIEWPROJECTION;
+uniform float4x4 worldInverseTranspose : WORLDINVERSETRANSPOSE;
+uniform float clock;
+uniform float3 lightWorldPos;
+uniform float3 cameraWorldPos;
 
-  // input parameters for our vertex shader
-  struct VertexShaderInput {
-    float4 position : POSITION;
-  };
 
-  // input parameters for our pixel shader
-  struct PixelShaderInput {
-    float4 position : POSITION;
-  };
+// Input parameters for the vertex shader.
+struct VertexShaderInput {
+  float4 position : POSITION;
+  float3 normal : NORMAL;
+  float4 color : COLOR;
+};
 
-  /**
-   * The vertex shader simply transforms the input vertices to screen space.
-   */
-  PixelShaderInput vertexShaderFunction(VertexShaderInput input) {
-    PixelShaderInput output;
 
-    // Multiply the vertex positions by the worldViewProjection matrix to
-    // transform them to screen space.
-    output.position = mul(input.position, worldViewProjection);
-    return output;
-  }
+// Input parameters for the pixel shader (also the output parameters for the
+// vertex shader.)
+struct PixelShaderInput {
+  float4 position : POSITION;          // the position in clip space
+  float3 objectPosition : TEXCOORD0;   // the position in world space
+  float3 normal : TEXCOORD1;           // the normal in world space
+  float4 color : COLOR;
+};
 
-  /**
-   * This pixel shader just returns the color red.
-   */
-  float4 pixelShaderFunction(PixelShaderInput input): COLOR {
-    return float4(1, 0, 0, 1);  // Red.
-  }
 
-  // Here we tell our effect file *which* functions are
-  // our vertex and pixel shaders.
+/**
+ * A function defining the shape of the wave.  Takes a single float2 as an
+ * argument the entries of which are the x and z components of a point in the
+ * plane.  Returns the height of that point.
+ *
+ * @param {float2} v The x and z components of the point in a single float2.
+ */
+float wave(float2 v) {
+  float d = length(v);
+  return 0.15 * sin(15 * d - 5 * clock) / (1 + d * d);
+}
 
-  // #o3d VertexShaderEntryPoint vertexShaderFunction
-  // #o3d PixelShaderEntryPoint pixelShaderFunction
-  // #o3d MatrixLoadOrder RowMajor
+
+/**
+ * vertexShaderFunction - The vertex shader perturbs the vertices of the plane
+ * to achieve the ripples.  Then it applies the worldViewProjection matrix.
+ *
+ * @param input.position Position vector of vertex in object coordinates.
+ * @param input.normal Normal of vertex in object coordinates.
+ * @param input.color Color of vertex.
+ */
+PixelShaderInput vertexShaderFunction(VertexShaderInput input) {
+  PixelShaderInput output;
+
+  float4 p = input.position;
+
+  // The height of the point p is adjusted according to the wave function.
+  p.y = wave(p.xz);
+
+  // Step size used to approximate the partial derivatives of the wave function.
+  float h = 0.001;
+
+  // We take the derivative numerically so that the wave function can be
+  // modified and the normal will still be correct.
+  float3 n = normalize(float3(
+      wave(float2(p.x - h, p.z)) - wave(float2(p.x + h, p.z)), 2 * h,
+      wave(float2(p.x, p.z - h)) - wave(float2(p.x, p.z + h))));
+
+  output.position = mul(p, worldViewProjection);
+  output.objectPosition = mul(p, world).xyz;
+  output.normal = mul(float4(n, 1), worldInverseTranspose).xyz;
+  output.color = input.color;
+
+  return output;
+}
+
+
+/**
+ * This pixel shader is meant to be minimal since the vertex shader is
+ * the focus of the sample.
+ */
+float4 pixelShaderFunction(PixelShaderInput input) : COLOR {
+  float3 p = input.objectPosition;          // The point in question.
+  float3 l = normalize(lightWorldPos - p);  // Unit-length vector toward light.
+  float3 n = normalize(input.normal);       // Unit-length normal vector.
+  float3 v = normalize(cameraWorldPos - p); // Unit-length vector toward camera.
+  float3 r = normalize(-reflect(v, n));     // Reflection of v across n.
+
+  float3 q = (lightWorldPos - p);
+  float ldotr = dot(r, l);
+  float specular = clamp(ldotr, 0, 1) /
+      (1 + length(q - length(q) * ldotr * r));
+
+  return float4(0, 0.6, 0.7, 1) * dot(n, l) + specular;
+}
+
+
+// #o3d VertexShaderEntryPoint vertexShaderFunction
+// #o3d PixelShaderEntryPoint pixelShaderFunction
+// #o3d MatrixLoadOrder RowMajor
 </textarea>
-
 		</div>
     </div>
 </div>

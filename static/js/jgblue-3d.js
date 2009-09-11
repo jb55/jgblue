@@ -1,212 +1,174 @@
 o3djs.require('o3djs.util');
 o3djs.require('o3djs.math');
 o3djs.require('o3djs.rendergraph');
-
-$(window).load( init );
-$(window).unload (uninit);
+o3djs.require('o3djs.primitives');
+o3djs.require('o3djs.effect');
 
 // global variables
+var g_o3dElement;
+var g_client;
 var g_o3d;
 var g_math;
-var g_client;
 var g_pack;
-var g_clock = 0;
-var g_timeMult = 1;
-var g_cubeTransform;
-var g_finished = false;  // for selenium testing
-
-function createColor(r, g, b, a) {
-    return [r/255, g/255, b/255, a/255];
-}
-
-/**
- * Creates a O3D shape representing a cube.  The shape consists of
- * a single primitive with eight vertices and 12 triangles (two for each face
- * of the cube).
- * @param {o3d.Material} material the material used by the primitive.
- * @return {o3d.Shape} The Shape object created.
- */
-function createCube(material) {
-  // Create a Shape object for the mesh.
-  var cubeShape = g_pack.createObject('Shape');
-
-  // Create the Primitive that will contain the geometry data for
-  // the cube.
-  var cubePrimitive = g_pack.createObject('Primitive');
-
-  // Create a StreamBank to hold the streams of vertex data.
-  var streamBank = g_pack.createObject('StreamBank');
-
-  // Assign the material that was passed in to the primitive.
-  cubePrimitive.material = material;
-
-  // Assign the Primitive to the Shape.
-  cubePrimitive.owner = cubeShape;
-
-  // Assign the StreamBank to the Primitive.
-  cubePrimitive.streamBank = streamBank;
-
-  // The cube is made of 12 triangles. There's eight vertices in total which
-  // are shared between the face triangles.
-  cubePrimitive.primitiveType = g_o3d.Primitive.TRIANGLELIST;
-  cubePrimitive.numberPrimitives = 12; // 12 triangles
-  cubePrimitive.numberVertices = 8;    // 8 vertices in total
-
-  // Create a javascript array that stores the X, Y and Z coordinates of each
-  // of the 8 corners of the cube.
-  var positionArray = [
-    -0.5, -0.5,  0.5,  // vertex 0
-     0.5, -0.5,  0.5,  // vertex 1
-    -0.5,  0.5,  0.5,  // vertex 2
-     0.5,  0.5,  0.5,  // vertex 3
-    -0.5,  0.5, -0.5,  // vertex 4
-     0.5,  0.5, -0.5,  // vertex 5
-    -0.5, -0.5, -0.5,  // vertex 6
-     0.5, -0.5, -0.5   // vertex 7
-  ];
-
-  // The following array defines how vertices are to be put together to form
-  // the triangles that make up the cube's faces.  In the index array, every
-  // three elements define a triangle.  So for example vertices 0, 1 and 2
-  // make up the first triangle, vertices 2, 1 and 3 the second one, etc.
-  var indicesArray = [
-      0, 1, 2,  // face 1
-      2, 1, 3,
-      2, 3, 4,  // face 2
-      4, 3, 5,
-      4, 5, 6,  // face 3
-      6, 5, 7,
-      6, 7, 0,  // face 4
-      0, 7, 1,
-      1, 7, 3,  // face 5
-      3, 7, 5,
-      6, 0, 4,  // face 6
-      4, 0, 2
-  ];
-
-  // Create buffers containing the vertex data.
-  var positionsBuffer = g_pack.createObject('VertexBuffer');
-  var positionsField = positionsBuffer.createField('FloatField', 3);
-  positionsBuffer.set(positionArray);
-
-  var indexBuffer = g_pack.createObject('IndexBuffer');
-  indexBuffer.set(indicesArray);
-
-  // Associate the positions Buffer with the StreamBank.
-  streamBank.setVertexStream(
-      g_o3d.Stream.POSITION, // semantic: This stream stores vertex positions
-      0,                     // semantic index: First (and only) position stream
-      positionsField,        // field: the field this stream uses.
-      0);                    // start_index: How many elements to skip in the
-                             //     field.
-
-  // Associate the triangle indices Buffer with the primitive.
-  cubePrimitive.indexBuffer = indexBuffer;
-
-  return cubeShape;
-}
-
-/**
- * This method gets called every time O3D renders a frame.  Here's where
- * we update the cube's transform to make it spin.
- * @param {o3d.RenderEvent} renderEvent The render event object that gives
- *     us the elapsed time since the last time a frame was rendered.
- */
-function renderCallback(renderEvent) {
-  g_clock += renderEvent.elapsedTime * g_timeMult;
-  // Rotate the cube around the Y axis.
-  g_cubeTransform.identity();
-  g_cubeTransform.rotateY(2.0 * g_clock);
-}
-
+var g_viewInfo;
+var g_clockParam;
 
 /**
  * Creates the client area.
  */
 function init() {
-  o3djs.util.makeClients(initStep2);
+  // These are here so that they are visible to both the browser (so
+  // selenium sees them) and the embedded V8 engine.
+  window.g_clock = 0;
+  window.g_timeMult = 1;
+  window.g_finished = false;  // for selenium testing.
+
+  // Comment out the line below to run the sample in the browser
+  // JavaScript engine.  This may be helpful for debugging.
+  o3djs.util.setMainEngine(o3djs.util.Engine.V8);
+
+  o3djs.util.makeClients(initStep2, 'LargeGeometry');
 }
 
+
 /**
- * Initializes O3D, creates the cube and sets up the transform and
- * render graphs.
+ * Initializes global variables, positions camera, creates the material, and
+ * draws the plane.
  * @param {Array} clientElements Array of o3d object elements.
  */
 function initStep2(clientElements) {
-  // Initializes global variables and libraries.
-  var o3dElement = clientElements[0];
-  g_client = o3dElement.client;
-  g_o3d = o3dElement.o3d;
+  // Init global variables.
+  initGlobals(clientElements);
+
+  // Set up the view and projection transformations.
+  initContext();
+
+  // Add the shapes to the transform heirarchy.
+  createPlane();
+
+  // Setup render callback.
+  g_client.setRenderCallback(onRender);
+
+  window.g_finished = true;  // for selenium testing.
+}
+
+
+/**
+ * Initializes global variables and libraries.
+ * @param {Array} clientElements An array of o3d object elements assumed
+ *   to have one entry.
+ */
+function initGlobals(clientElements) {
+  g_o3dElement = clientElements[0];
+  g_o3d = g_o3dElement.o3d;
   g_math = o3djs.math;
 
-  // Initialize O3D sample libraries.
-  o3djs.base.init(o3dElement);
+  // Set window.g_client as well.  Otherwise when the sample runs in
+  // V8, selenium won't be able to find this variable (it can only see
+  // the browser environment).
+  window.g_client = g_client = g_o3dElement.client;
 
   // Create a pack to manage the objects created.
   g_pack = g_client.createPack();
 
   // Create the render graph for a view.
-  var viewInfo = o3djs.rendergraph.createBasicView(
+  g_viewInfo = o3djs.rendergraph.createBasicView(
       g_pack,
       g_client.root,
-      g_client.renderGraphRoot,
-      createColor(32,37,43,255));
-    
+      g_client.renderGraphRoot);
+}
 
-  // Set up a simple orthographic view.
 
-  viewInfo.drawContext.projection = g_math.matrix4.perspective(
-      g_math.degToRad(30), // 30 degree fov.
-      g_client.width / g_client.height,
+/**
+ * Sets up reasonable view and projection matrices.
+ */
+function initContext() {
+  // Set up a perspective transformation for the projection.
+  g_viewInfo.drawContext.projection = g_math.matrix4.perspective(
+      g_math.degToRad(30), // 30 degree frustum.
+      g_client.width / g_client.height, // Aspect ratio.
       1,                  // Near plane.
       5000);              // Far plane.
 
   // Set up our view transformation to look towards the world origin where the
   // cube is located.
-  viewInfo.drawContext.view = g_math.matrix4.lookAt([0, 1, 5],  // eye
-                                            [0, 0, 0],  // target
-                                            [0, 1, 0]); // up
-
-  // Create an Effect object and initialize it using the shaders from the
-  // text area.
-  var redEffect = g_pack.createObject('Effect');
-  var shaderString = document.getElementById('effect').value;
-  redEffect.loadFromFXString(shaderString);
-
-  // Create a Material for the mesh.
-  var redMaterial = g_pack.createObject('Material');
-
-  // Set the material's drawList.
-  redMaterial.drawList = viewInfo.performanceDrawList;
-
-  // Apply our effect to this material. The effect tells the 3D hardware
-  // which shaders to use.
-  redMaterial.effect = redEffect;
-
-  // Create the Shape for the cube mesh and assign its material.
-  var cubeShape = createCube(redMaterial);
-
-  // Create a new transform and parent the Shape under it.
-  g_cubeTransform = g_pack.createObject('Transform');
-  g_cubeTransform.addShape(cubeShape);
-
-  // Parent the cube's transform to the client root.
-  g_cubeTransform.parent = g_client.root;
-
-  // Generate the draw elements for the cube shape.
-  cubeShape.createDrawElements(g_pack, null);
-
-  // Set our render callback for animation.
-  // This sets a function to be executed every time a frame is rendered.
-  g_client.setRenderCallback(renderCallback);
-
-  g_finished = true;  // for selenium testing.
+  g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+      [4, 4, 4],   // eye
+      [0, 0, 0],   // target
+      [0, 1, 0]);  // up
 }
 
+
 /**
- * Removes any callbacks so they don't get called after the page has unloaded.
+ * Creates an effect using the shaders in the textarea in the document, applies
+ * the effect to a new material, binds the uniform parameters of the shader
+ * to parameters of the material, and sets certain parameters: the light and
+ * camera position.
+ * @return {Material} The material.
  */
-function uninit() {
+function createMaterial() {
+  // Create a new, empty Material and Effect object.
+  var material = g_pack.createObject('Material');
+  var effect = g_pack.createObject('Effect');
+
+  // Load shader string from document.
+  var shaderString = o3djs.util.getElementContentById('effect');
+  effect.loadFromFXString(shaderString);
+
+  // Apply the effect to this material.
+  material.effect = effect;
+
+  // Bind uniform parameters declared in shader to parameters of material.
+  effect.createUniformParameters(material);
+
+  // Set the material's drawList.
+  material.drawList = g_viewInfo.performanceDrawList;
+
+  // Set light and camera positions for the pixel shader.
+  material.getParam('lightWorldPos').value = [3, 10, 0];
+  material.getParam('cameraWorldPos').value = [1, 3, 12];
+
+  // Look up clock param.
+  g_clockParam = material.getParam('clock');
+
+  return material;
+}
+
+
+/**
+ * Creates the plane using the primitives utility library, and adds it to the
+ * transform graph at the root node.
+ */
+function createPlane() {
+  // This will create a plane subdivided into 180,000 triangles.
+  var plane = o3djs.primitives.createPlane(
+      g_pack, createMaterial(), 4, 4, 300, 300);
+
+  // Add the shape to the transform heirarchy.
+  g_client.root.addShape(plane);
+}
+
+
+/**
+ * Updates the clock for the animation.
+ * @param {!o3d.RenderEvent} renderEvent Rendering Information.
+ */
+function onRender(renderEvent) {
+  var elapsedTime = renderEvent.elapsedTime;
+
+  // Update g_clock in the browser and cache a V8 copy that can be
+  // accessed efficiently. g_clock must be in the browser for selenium.
+  var clock = window.g_clock + elapsedTime * window.g_timeMult;
+  window.g_clock = clock;
+
+  g_clockParam.value = clock;
+}
+
+
+/**
+ * Cleanup before exiting.
+ */
+function unload() {
   if (g_client) {
     g_client.cleanup();
   }
