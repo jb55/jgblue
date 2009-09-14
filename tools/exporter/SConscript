@@ -14,7 +14,7 @@ files = [
 
 inc = ['fcollada']
 
-defines = ['UNICODE']
+defines = ['UNICODE', 'JUMPGATE']
 
 if 'linux' in sys.platform:
     defines.append("LINUX")
