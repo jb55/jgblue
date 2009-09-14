@@ -1,9 +1,7 @@
 import os
 import sys
 
-opt = Environment(CCFLAGS = '-O2')
-dbg = Environment(CCFLAGS = '-g')
-env = dbg
+env = Environment(CCFLAGS = '-g -O2 -W -Wall')
 
 Export('env')
 
