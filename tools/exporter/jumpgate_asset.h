@@ -6,8 +6,6 @@
 
 namespace Exporter {
 
-#ifdef JUMPGATE
-
 class JumpgateAsset : public IAsset
 {
 
@@ -36,7 +34,5 @@ public:
 };
 
 };
-
-#endif
 
 #endif

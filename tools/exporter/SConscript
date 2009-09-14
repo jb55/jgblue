@@ -14,10 +14,9 @@ files = [
 
 inc = ['fcollada']
 
-defines = ['UNICODE', 'JUMPGATE']
+defines = ['UNICODE']
 
-if 'linux' in sys.platform:
-    defines.append("LINUX")
+defines.append(sys.platform.upper())
 
 env.Program("exporter", files, 
     LIBS = ['fcollada', 'dl'], 

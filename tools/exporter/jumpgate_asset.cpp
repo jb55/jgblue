@@ -2,7 +2,6 @@
 
 namespace Exporter {
 
-#ifdef JUMPGATE
 
 MockJumpgateAsset::MockJumpgateAsset() {
     float pData[] = { 1.0, 2.0, 3.0, 4.0 };
@@ -45,7 +44,5 @@ float* JumpgateAsset::GetTextureCoords(unsigned int meshIndex, unsigned int& cou
 unsigned int JumpgateAsset::GetMeshCount() {
     return m_meshes.size();
 }
-
-#endif
 
 }
