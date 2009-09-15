@@ -48,56 +48,75 @@ function g_compute_enum(data, sort_val) {
 }
 
 /* add swap to array */
-Array.prototype.swap = function (a, b)
-{
+Array.prototype.swap = function (a, b) {
     var tmp = this[a];
     this[a] = this[b];
     this[b] = tmp;
 };
 
-
-/*
- * partition, used in the quicksort algorithm
- */
-function g_partition(array, begin, end, pivot, on_field, order)
-{
-    var piv = array[pivot].computed[on_field] === undefined ?
-                array[pivot][on_field] : array[pivot].computed[on_field],
-        store = begin,
-        val, ix;
-
-    array.swap(pivot, end - 1);
-    for (ix = begin; ix < end - 1; ++ix) {
-        /* if the field has been computed, sort on that instead */
-        val = array[ix].computed[on_field] === undefined ? 
-                array[ix][on_field] : array[ix].computed[on_field];
-        if (order ? val <= piv : val >= piv) {
-            array.swap(store, ix);
-            ++store;
-        }
+function g_insert(array, begin, end, v) {
+    while(begin + 1 < end && array[begin+1] < v) {
+        array.swap(begin, begin + 1);
+        ++begin;
     }
-    array.swap(end - 1, store);
-    return store;
+    array[begin] = v;
 }
 
 /* 
- * quicksort implementation 
+ * merge sort implementation 
  * 
  * data: an array of Objects
  * on_field: the field to sort on in Objects
  * order: 0 ascending, 1 descending
  */
-function g_quicksort(array, begin, end, on_field, order) {
 
-    if (end - 1 > begin) {
-        var pivot = begin + Math.floor(Math.random() * (end - begin));
-
-        pivot = g_partition(array, begin, end, pivot, on_field, order);
-
-        g_quicksort(array, begin, pivot, on_field, order);
-        g_quicksort(array, pivot + 1, end, on_field, order);
-    }
+function g_msort(array, on_field, order)
+{
+    if(array.length < 2)
+        return array;
+    var middle = Math.ceil(array.length/2);
+    return g_merge(g_msort(array.slice(0, middle), on_field, order),
+            g_msort(array.slice(middle), on_field, order),
+            on_field, order);
 }
+
+function g_sort_val(obj, on_field) {
+    return obj.computed[on_field] === undefined ?
+            obj[on_field] : obj.computed[on_field];
+}
+
+function g_merge(left, right, on_field, order)
+{
+    var result = [];
+    var val, val_r, obj, obj_r;
+
+
+    while((left.length > 0) && (right.length > 0))
+    {
+        obj = left[0];
+        obj_r = right[0];
+
+        val = obj.computed[on_field] === undefined ?
+                obj[on_field] : obj.computed[on_field];
+        val_r = obj_r.computed[on_field] === undefined ?
+                obj_r[on_field] : obj_r.computed[on_field];
+
+        if(order ? val < val_r : val > val_r)
+            result.push(left.shift());
+        else
+            result.push(right.shift());
+    }
+    while(left.length > 0)
+        result.push(left.shift());
+    while(right.length > 0)
+        result.push(right.shift());
+    return result;
+}
+
+function g_sort(array, on_field, order) {
+    return g_msort(array, on_field, order);
+}
+
 
 /* data index */
 jgblue.index = {};
@@ -238,7 +257,7 @@ jgblue.listview = function (options, data) {
     function sort(column_id, order) {
         var body = [];
         _body.empty();
-        g_quicksort(_data, 0, _data.length, column_id, order);
+        _data = g_sort(_data, column_id, order);
         build_body(_data, body);
         _body.append(body.join(""));
     }
