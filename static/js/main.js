@@ -119,286 +119,311 @@ function g_sort(array, on_field, order) {
 
 
 /* data index */
-jgblue.index = {};
+jgblue.index = jgblue.index || {};
 
-jgblue.tooltip = function (options) {
-};
+/* ----------------------------------
+ * Tooltips
+ * ----------------------------------
+ */
+jgblue.tooltip = jgblue.tooltip || {};
+
+/* ----------------------------------
+ * Forms
+ * ----------------------------------
+ */
+
+jgblue.forms = jgblue.forms || {};
+
+jgblue.forms.screenshot_upload = function (formid) {
+
+    
+
+}
+
 
 /* ----------------------------------
  *  Listview control
  * ----------------------------------
  */
-jgblue.listview = function (options, data) {
 
-    /* register events */
-    function register_events() {
-        
-        var selector = $(_parent_str + " tr");
+jgblue.listview = jgblue.listview || {};
 
-        /* listview row highlight */
-        selector.live("mouseover", function() {
-            $(this).toggleClass("lv-row-highlight", true);
-        });
-        selector.live("mouseout", function() {
-            $(this).toggleClass("lv-row-highlight", false);
-        });
-        selector.live("click", function() {
-            
-        });
+jgblue.listview.create = function(options, data) {
+    return new jgblue.listview.Listview(options, data);
+}
 
-        /* column headers */
-        $("#listview th").live("click", function() {
-            var col, col_id, saved_asc;
-            col_id = $(this).attr("id").slice(4);
-            col = get_col(col_id);
-            if( col.asc === undefined )
-                col.asc == true;
-            if( col.cur_asc === undefined )
-                col.cur_asc = col.asc;
-            sort(col_id, col.cur_asc);
-            saved_asc = col.cur_asc;
-            reset_sort_orders();
-            col.cur_asc = !saved_asc;
-        });
+jgblue.listview.Listview = function (options, data) {
 
-        /* one time only bindings */
-        _arrows.fastleft = $("#lv-page .sprite-fastleft");
-        _arrows.left = $("#lv-page .sprite-left");
-        _arrows.right = $("#lv-page .sprite-right");
-        _arrows.fastright = $("#lv-page .sprite-fastright");
-        _arrows.all = $("#lv-page .sprites");
-        _arrows.hasarrows = true;
+    this.template = jgblue.listview.templates[options.template];
+    this.cols = this.template.columns;
+    this.count = data.items.length;
+    this.parent_str = options.parent;
+    this.parent = $(options.parent);
+    this.data = data.items;
+    this.per_page = 50;
+    this.cur_page = 1;
+    this.arrows = {};
 
-        _arrows.all.css("cursor", "pointer");
+    this.last_page = Math.ceil(data.items.length / this.per_page);
+    if ( this.last_page === 0 )
+        this.last_page = 1;
 
-        _arrows.fastleft.hover(function() {
-            $(this).attr("class","sprites sprite-fastleft-hl");
-        }, function () {
-            $(this).attr("class","sprites sprite-fastleft");
-        });
+    this.note = $(".lv-bar-note", this.parent);
+    this.page_txt = $(".lv-page-txt", this.parent);
 
-        _arrows.left.hover(function() {
-            $(this).attr("class","sprites sprite-left-hl");
-        }, function () {
-            $(this).attr("class","sprites sprite-left");
-        });
+    this.compute_sort_vals(this.data);
+    this.register_events();
+    this.build_table();
+    this.body = $(".lv-body", this.parent);
 
-        _arrows.right.hover(function() {
-            $(this).attr("class","sprites sprite-right-hl");
-        }, function () {
-            $(this).attr("class","sprites sprite-right");
-        });
+};
 
-        _arrows.fastright.hover(function() {
-            $(this).attr("class","sprites sprite-fastright-hl");
-        }, function () {
-            $(this).attr("class","sprites sprite-fastright");
-        });
+jgblue.listview.Listview.prototype.get_col = function (id) {
+    for (var i=0; i < this.cols.length; ++i)
+        if (this.cols[i].id == id)
+            return this.cols[i];
+    return undefined;
+}
 
-        _arrows.left.bind("click", function() {
-            switch_page(-1);
-        });
+/* register events */
+jgblue.listview.Listview.prototype.register_events = function () {
+    
+    var selector = $(this.parent_str + " tr");
 
-        _arrows.right.bind("click", function() {
-            switch_page(1);
-        });
+    /* listview row highlight */
+    selector.live("mouseover", function() {
+        $(this).toggleClass("lv-row-highlight", true);
+    });
+    selector.live("mouseout", function() {
+        $(this).toggleClass("lv-row-highlight", false);
+    });
 
-        _arrows.fastright.bind("click", function() {
-            switch_page(2);
-        });
+    /* column headers */
+    var lv = this;
+    $(this.parent_str + " th").live("click", function() {
+        var col, col_id, saved_asc;
 
-        _arrows.fastleft.bind("click", function() {
-            switch_page(-2);
-        });
+        col_id = $(this).attr("id").slice(4);
+        col = lv.get_col(col_id);
+
+        if ( col.asc === undefined )
+            col.asc == true;
+        if ( col.cur_asc === undefined )
+            col.cur_asc = col.asc;
+
+        lv.sort(col_id, col.cur_asc);
+        saved_asc = col.cur_asc;
+        lv.reset_sort_orders();
+        col.cur_asc = !saved_asc;
+    });
+
+    /* one time only bindings */
+    this.arrows.fastleft = $(".lv-page .sprite-fastleft", this.parent);
+    this.arrows.left = $(".lv-page .sprite-left", this.parent);
+    this.arrows.right = $(".lv-page .sprite-right", this.parent);
+    this.arrows.fastright = $(".lv-page .sprite-fastright", this.parent);
+    this.arrows.all = $(".lv-page .sprites", this.parent);
+    this.arrows.hasarrows = true;
+
+    this.arrows.all.css("cursor", "pointer");
+
+    this.arrows.fastleft.hover(function() {
+        $(this).attr("class","sprites sprite-fastleft-hl");
+    }, function () {
+        $(this).attr("class","sprites sprite-fastleft");
+    });
+
+    this.arrows.left.hover(function() {
+        $(this).attr("class","sprites sprite-left-hl");
+    }, function () {
+        $(this).attr("class","sprites sprite-left");
+    });
+
+    this.arrows.right.hover(function() {
+        $(this).attr("class","sprites sprite-right-hl");
+    }, function () {
+        $(this).attr("class","sprites sprite-right");
+    });
+
+    this.arrows.fastright.hover(function() {
+        $(this).attr("class","sprites sprite-fastright-hl");
+    }, function () {
+        $(this).attr("class","sprites sprite-fastright");
+    });
+
+    this.arrows.left.bind("click", function() {
+        lv.switch_page(-1);
+    });
+
+    this.arrows.right.bind("click", function() {
+        lv.switch_page(1);
+    });
+
+    this.arrows.fastright.bind("click", function() {
+        lv.switch_page(2);
+    });
+
+    this.arrows.fastleft.bind("click", function() {
+        lv.switch_page(-2);
+    });
+}
+
+jgblue.listview.Listview.prototype.switch_page = function (where) {
+    switch (where) {
+    case 1:
+        if ( this.cur_page + 1 > this.last_page )
+            return;
+        this.cur_page++;
+        break;
+    case -1:
+        if ( this.cur_page - 1 < 1 )
+            return;
+        this.cur_page--;
+        break;
+    case 2:
+        this.cur_page = this.last_page;
+        break;
+    case -2:
+        this.cur_page = 1;
+        break;
     }
 
-    function switch_page(where){
-        switch(where) {
-        case 1:
-            if( _cur_page + 1 > _last_page )
-                return;
-            _cur_page++;
-            break;
-        case -1:
-            if( _cur_page - 1 < 1 )
-                return;
-            _cur_page--;
-            break;
-        case 2:
-            _cur_page = _last_page;
-            break;
-        case -2:
-            _cur_page = 1;
-            break;
-        }
+    this.rebuild_body();
+}
 
-        rebuild_body();
-    }
+jgblue.listview.Listview.prototype.rebuild_body = function () {
+    var body = [];
+    this.body.empty();
+    this.build_body(this.data, body);
+    this.body.append(body.join(""));
+}
 
-    function rebuild_body() {
-        var body = [];
-        _body.empty();
-        build_body(_data, body);
-        _body.append(body.join(""));
-    }
 
-    function get_col(id) {
-        for(var i=0; i < _cols.length; ++i)
-            if(_cols[i].id == id)
-                return _cols[i];
-        return undefined;
-    }
+jgblue.listview.Listview.prototype.reset_sort_orders = function () {
+    for (var i=0; i < this.cols.length; ++i)
+        this.cols[i].cur_asc = this.cols[i].asc;
+}
 
-    function reset_sort_orders() {
-        for(var i=0; i < _cols.length; ++i)
-            _cols[i].cur_asc = _cols[i].asc;
-    }
+jgblue.listview.Listview.prototype.sort = function (column_id, order) {
+    var body = [];
+    this.body.empty();
+    this.data = g_sort(this.data, column_id, order);
+    this.build_body(this.data, body);
+    this.body.append(body.join(""));
+}
 
-    function sort(column_id, order) {
-        var body = [];
-        _body.empty();
-        _data = g_sort(_data, column_id, order);
-        build_body(_data, body);
-        _body.append(body.join(""));
-    }
+/** 
+ * builds computed sort values so sort will work on computed fields
+ * this function indexes items in the jgblue.index as well
+ * XXX: this is kind of hacky considering that dynamic sorting
+ * fields will not work as expected.
+ *
+ * So basically:
+ * - Quicksort the entire list (200?)
+ * - Only compute the first this.per_page(50) fields (thanks to this fn),
+ *   otherwise we'd have to compute 200 fields every time. got it?
+ */
+jgblue.listview.Listview.prototype.compute_sort_vals = function (items) {
+    var i, j, item, col, link, sort_val,
+        num_cols = this.cols.length,
+        num_items = items.length;
 
-    /** 
-     * builds computed sort values so sort will work on computed fields
-     * this function indexes items in the jgblue.index as well
-     * XXX: this is kind of hacky considering that dynamic sorting
-     * fields will not work as expected.
-     *
-     * So basically:
-     * - Quicksort the entire list (200?)
-     * - Only compute the first _per_page(50) fields (thanks to this fn),
-     *   otherwise we'd have to compute 200 fields every time. got it?
-     */
-    function compute_sort_vals(items) {
-        var i, j, item, col, link, sort_val,
-            num_cols = _cols.length,
-            num_items = items.length;
+    for (i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
+        item.computed = {};
+        jgblue.index[item.id] = item;
+        for (j=0, col=this.cols[0]; j < num_cols; ++j, col=this.cols[j]) {
+            if (col.compute != undefined) {
+                sort_val = {val: undefined};
+                col.compute({template: this.template, item:item, field: col.id, value: item[col.id]}, sort_val);
 
-        for(i=0, item=items[0]; i < num_items; ++i, item=items[i]) {
-            item.computed = {};
-            jgblue.index[item.id] = item;
-            for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
-                if(col.compute != undefined) {
-                    sort_val = {val: undefined};
-                    col.compute({template: _template, item:item, field: col.id, value: item[col.id]}, sort_val);
-
-                    /* store the computed value in each item so it can be sorted on later */
-                    if( sort_val.val != undefined ) {
-                       item.computed[col.id] = sort_val.val;
-                    }
+                /* store the computed value in each item so it can be sorted on later */
+                if ( sort_val.val != undefined ) {
+                   item.computed[col.id] = sort_val.val;
                 }
             }
         }
-        
-    }
-
-    function build_body(items, tab, order) {
-        var i, j, item, col, val, link, sort_val,
-            num_cols = _cols.length,
-            num_items = items.length;
-
-        update_labels();
-
-        sort_val = { val: undefined };
-        /* load all items and put their data into their respective columns */
-        i = (_cur_page-1) * _per_page;
-        item = items[i];
-        for(; i < num_items && i < (_cur_page*_per_page); ++i, item=items[i]) {
-            link = g_link(_template, item.id);
-            tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
-            for(j=0, col=_cols[0]; j < num_cols; ++j, col=_cols[j]) {
-                if(col.compute != undefined)
-                    val = col.compute({template: _template, item:item, field: col.id, value: item[col.id]}, sort_val);
-                else
-                    val = item[col.id];
-                
-                tab.push("<td style=\"text-align:",col.align,"\">", val, "</td>");
-            }
-            tab.push("</tr>");
-        }
-
-    }
-
-    function update_labels() {
-        var len = _count,
-            first, last;
-
-        first = (_per_page*(_cur_page-1)) + 1;
-        last = _per_page * _cur_page;
-        if( last > _count )
-            last = _count;
-
-        _page_txt.text(first + " - " + last + " of " + len);
-
-        _arrows.all.css("display", "inline");
-
-        if( _cur_page == 1 ) {
-            _arrows.left.css("display", "none");
-            _arrows.fastleft.css("display", "none");
-        }
-        if( _cur_page == _last_page ) {
-            _arrows.right.css("display", "none");
-            _arrows.fastright.css("display", "none");
-        }
-
-    }
-
-    /* 
-     * The template specifies what columns are needed and what information needs to be in each
-     * column. The column ids match with item property names, so we should never desync information
-     * as long as the template is correct
-     */
-    function build_table() {
-        var num_cols = _cols.length,
-            tab = ["<table width=\"100%\"><thead><tr>"],
-            col = _cols[0],
-            url = window.location.href + "?json=1",
-            i=0;
-        
-
-        /* build column headers from the template */
-        for(i=0; i < num_cols; ++i, col=_cols[i]) {
-            tab.push("<th style=\"width:", col.width,";text-align:", 
-                        col.align,";\" id=\"col-",col.id,"\">", col.name,"</th>");
-        }
-        tab.push("</tr></thead><tbody id=\"lv-body\">");
-        
-        build_body(_data, tab)
-        
-        tab.push("</tbody></table>");
-        _parent.append(tab.join(""));
     }
     
-    var _template = jgblue.listview.templates[options.template],
-        _cols = _template.columns,
-        _count = data.items.length,
-        _parent_str = options.parent,
-        _parent = $(options.parent),
-        _data = data.items,
-        _per_page = 50,
-        _cur_page = 1,
-        _last_page, 
-        _note,
-        _body,
-        _page_txt,
-        _arrows = {};
+}
 
-    _last_page = Math.ceil(data.items.length / _per_page);
-    if( _last_page === 0 )
-        _last_page = 1;
+jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
+    var i, j, item, col, val, link, sort_val,
+        num_cols = this.cols.length,
+        num_items = items.length;
 
-    _note = $("#lv-bar-note");
-    _page_txt = $("#lv-page-txt");
+    this.update_labels();
 
-    compute_sort_vals(_data);
-    register_events();
-    build_table();
-    _body = $("#lv-body");
-};
+    sort_val = { val: undefined };
+    /* load all items and put their data into their respective columns */
+    i = (this.cur_page-1) * this.per_page;
+    item = items[i];
+
+    for (; i < num_items && i < (this.cur_page*this.per_page); ++i, item=items[i]) {
+        link = g_link(this.template, item.id);
+        tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
+
+        for (j=0, col=this.cols[0]; j < num_cols; ++j, col=this.cols[j]) {
+            if (col.compute != undefined)
+                val = col.compute({template: this.template, item:item, field: col.id, value: item[col.id]}, sort_val);
+            else
+                val = item[col.id];
+            
+            tab.push("<td style=\"text-align:",col.align,"\">", val, "</td>");
+        }
+        tab.push("</tr>");
+    }
+
+}
+
+jgblue.listview.Listview.prototype.update_labels = function () {
+    var len = this.count,
+        first, last;
+
+    first = (this.per_page * (this.cur_page - 1)) + 1;
+    last = this.per_page * this.cur_page;
+    if ( last > this.count )
+        last = this.count;
+
+    this.page_txt.text(first + " - " + last + " of " + len);
+    this.arrows.all.css("display", "inline");
+
+    if ( this.cur_page == 1 ) {
+        this.arrows.left.css("display", "none");
+        this.arrows.fastleft.css("display", "none");
+    }
+    if ( this.cur_page == this.last_page ) {
+        this.arrows.right.css("display", "none");
+        this.arrows.fastright.css("display", "none");
+    }
+
+}
+
+/* 
+ * The template specifies what columns are needed and what information needs to be in each
+ * column. The column ids match with item property names, so we should never desync information
+ * as long as the template is correct
+ */
+jgblue.listview.Listview.prototype.build_table = function () {
+    var num_cols = this.cols.length,
+        tab = ["<table width=\"100%\"><thead><tr>"],
+        col = this.cols[0],
+        url = window.location.href + "?json=1",
+        i=0;
+    
+
+    /* build column headers from the template */
+    for (i=0; i < num_cols; ++i, col=this.cols[i]) {
+        tab.push("<th style=\"width:", col.width,";text-align:", 
+                    col.align,";\" id=\"col-",col.id,"\">", col.name,"</th>");
+    }
+    tab.push("</tr></thead><tbody class=\"lv-body\">");
+    
+    this.build_body(this.data, tab)
+    
+    tab.push("</tbody></table>");
+    this.parent.append(tab.join(""));
+}
+    
 
 jgblue.listview.templates = {
     // --------------------------------
@@ -430,9 +455,9 @@ $("a").live("mouseover", function() {
     var type, id, tooltip,
         re = /^\/(item|medal)\/(\d+)/.exec($(this).attr("href"));
 
-    if(!re)
+    if (!re)
         return;
-    if(re.length != 3)
+    if (re.length != 3)
         return;
 
     type = re[1];
@@ -441,7 +466,7 @@ $("a").live("mouseover", function() {
     item = jgblue.index[id];
     console.log(type + " link (" + item.name + ")");
 
-    switch(type) {
+    switch (type) {
     case "item":
         break;
     case "medal":

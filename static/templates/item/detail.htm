@@ -29,7 +29,18 @@
 <div id="submit-screenshot" class="tab-page">
     <h3>{% trans "Submit a screenshot" %}</h3>
     Browse for a file from your computer.<br/>
-
+<p class="form-msg">{{ ss_msg }}</p>
+<form action="?upload_ss" id="screenshotForm" method="post" enctype="multipart/form-data">
+{{ ss_form.as_p }}
+<input type="submit" id="screenshotSubmit" value="Submit"/>
+</form>
 
 </div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    $(document).ready( function () {
+        jgblue.forms.screenshot_upload("#screenshotForm");
+    });
+</script>
 {% endblock %}

@@ -114,27 +114,27 @@ img {
     background-position: 0 -126px;
 }
 
-#lv-bar {
+.lv-bar {
     padding: 5px;
 }
 
-#lv-page {
+.lv-page {
     float: right;
 }
 
-#lv-page-txt {
+.lv-page-txt {
     vertical-align: 5px;
 }
 
-#listview table, .tab-page, .tabs div {
+.listview table, .tab-page, .tabs div {
 	background: #282e36;
 }
 
-#listview table {
+.listview table {
 	border-collapse: collapse;
 }
 
-#listview table th {
+.listview table th {
 	background: #2f3740 url(http://dstatic.jgblue.com/img/column-bg.png) top left repeat-x;
 	border: 1px solid #191d23;
 	padding: 8px;
@@ -142,7 +142,7 @@ img {
     cursor: pointer;
 }
 
-#listview table td {
+.listview table td {
 	padding: 15px 8px 15px 8px;
 	border: 1px solid #191d23;
     cursor: pointer;

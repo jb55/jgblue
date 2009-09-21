@@ -16,3 +16,5 @@ def serialize(queryset, limit_items, format="json", fields=SerializeFields.Item)
     final["items"] = items
     return simplejson.dumps(final, ensure_ascii=False, separators=(',',':'))
 
+def jsonize(obj):
+    return simplejson.dumps(obj, ensure_ascii=False, separators=(',',':'))

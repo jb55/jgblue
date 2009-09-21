@@ -1,4 +1,5 @@
 import logging
+import os.path
 
 logging.basicConfig(
     level = logging.DEBUG,
@@ -6,6 +7,9 @@ logging.basicConfig(
 )
 
 # Django settings for jgblue project.
+PROJECT_DIR = "/home/jb55/jgblue-dev"
+STATIC_DIR = os.path.join(PROJECT_DIR, "static")
+TEMPLATES_DIR = os.path.join(STATIC_DIR, "templates")
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -41,8 +45,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # Absolute path to the directory that holds media.
-# Example: "/home/jb555/jgblue/static"
-MEDIA_ROOT = "/home/jb55/jgblue/static"
+MEDIA_ROOT = STATIC_DIR
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -77,7 +80,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/home/jb55/jgblue-dev/static/templates"
+    TEMPLATES_DIR,
 )
 
 INSTALLED_APPS = (
@@ -88,3 +91,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'jgblue.database',
 )
+
+# jgblue settings
+SCREENSHOTS_UPLOAD_DIR = os.path.join(PROJECT_DIR, "upload/tmp") 
