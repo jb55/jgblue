@@ -15,8 +15,8 @@ var jgblue = {};
  * value - the value of the field (equiv to item[field])
  */
 
-function g_link(template, id) {
-    return "/" + template.id + "/" + id;
+function g_link(template, item) {
+    return "/" + template.id + "/" + item.id;
 }
 
 function g_compute_link(data, sort_val) {
@@ -46,13 +46,6 @@ function g_compute_subclass(data, sort_val) {
 function g_compute_enum(data, sort_val) {
     return jgblue.enums[data.field][data.value];
 }
-
-/* add swap to array */
-Array.prototype.swap = function (a, b) {
-    var tmp = this[a];
-    this[a] = this[b];
-    this[b] = tmp;
-};
 
 function g_insert(array, begin, end, v) {
     while(begin + 1 < end && array[begin+1] < v) {
@@ -117,7 +110,6 @@ function g_sort(array, on_field, order) {
     return g_msort(array, on_field, order);
 }
 
-
 /* data index */
 jgblue.index = jgblue.index || {};
 
@@ -127,18 +119,6 @@ jgblue.index = jgblue.index || {};
  */
 jgblue.tooltip = jgblue.tooltip || {};
 
-/* ----------------------------------
- * Forms
- * ----------------------------------
- */
-
-jgblue.forms = jgblue.forms || {};
-
-jgblue.forms.screenshot_upload = function (formid) {
-
-    
-
-}
 
 
 /* ----------------------------------
@@ -152,11 +132,23 @@ jgblue.listview.create = function(options, data) {
     return new jgblue.listview.Listview(options, data);
 }
 
+jgblue.listview.compute_screenshot = function (data, sort_val) {
+    var content = ["<div class=\"grid-cell\"><img src=\"http://dstatic.jgblue.com/img/tmp_uploads/", data.item.thumb_uuid, "\"/>"];
+    content.push("<p>", data.item.description, "</p></div>");
+    return content.join("");
+}
+
+jgblue.listview.screenshot_link = function (template, item) {
+    return "http://dstatic.jgblue.com/img/tmp_uploads/" + item.uuid;
+}
+
 jgblue.listview.Listview = function (options, data) {
 
     this.template = jgblue.listview.templates[options.template];
     this.cols = this.template.columns;
     this.count = data.items.length;
+    this.is_grid = !!this.template.grid;
+    this.item_node = this.is_grid ? "td" : "tr";
     this.parent_str = options.parent;
     this.parent = $(options.parent);
     this.data = data.items;
@@ -178,6 +170,7 @@ jgblue.listview.Listview = function (options, data) {
 
 };
 
+
 jgblue.listview.Listview.prototype.get_col = function (id) {
     for (var i=0; i < this.cols.length; ++i)
         if (this.cols[i].id == id)
@@ -188,7 +181,7 @@ jgblue.listview.Listview.prototype.get_col = function (id) {
 /* register events */
 jgblue.listview.Listview.prototype.register_events = function () {
     
-    var selector = $(this.parent_str + " tr");
+    var selector = $(this.parent_str + " " + this.item_node);
 
     /* listview row highlight */
     selector.live("mouseover", function() {
@@ -200,22 +193,24 @@ jgblue.listview.Listview.prototype.register_events = function () {
 
     /* column headers */
     var lv = this;
-    $(this.parent_str + " th").live("click", function() {
-        var col, col_id, saved_asc;
+    if (!this.is_grid ) {
+        $(this.parent_str + " th").live("click", function() {
+            var col, col_id, saved_asc;
 
-        col_id = $(this).attr("id").slice(4);
-        col = lv.get_col(col_id);
+            col_id = $(this).attr("id").slice(4);
+            col = lv.get_col(col_id);
 
-        if ( col.asc === undefined )
-            col.asc == true;
-        if ( col.cur_asc === undefined )
-            col.cur_asc = col.asc;
+            if ( col.asc === undefined )
+                col.asc == true;
+            if ( col.cur_asc === undefined )
+                col.cur_asc = col.asc;
 
-        lv.sort(col_id, col.cur_asc);
-        saved_asc = col.cur_asc;
-        lv.reset_sort_orders();
-        col.cur_asc = !saved_asc;
-    });
+            lv.sort(col_id, col.cur_asc);
+            saved_asc = col.cur_asc;
+            lv.reset_sort_orders();
+            col.cur_asc = !saved_asc;
+        });
+    }
 
     /* one time only bindings */
     this.arrows.fastleft = $(".lv-page .sprite-fastleft", this.parent);
@@ -266,6 +261,28 @@ jgblue.listview.Listview.prototype.register_events = function () {
     this.arrows.fastleft.bind("click", function() {
         lv.switch_page(-2);
     });
+
+    /* pre-div */
+    if (this.template.pre_div_toggler) {
+        var pre_div = $(this.template.pre_div);
+        var show = true;
+
+        if (this.template.pre_div_auto_search) {
+            show = window.location.search.contains(this.template.pre_div_auto_search);
+        } else if (this.template.pre_div_auto_hash) {
+            show = window.location.hash.contains(this.template.pre_div_auto_hash);
+        }
+
+        if (show) {
+            pre_div.show();
+        } else {
+            pre_div.hide();
+        }
+
+        $(this.template.pre_div_toggler).click( function () {
+            pre_div.toggle();  
+        });
+    }
 }
 
 jgblue.listview.Listview.prototype.switch_page = function (where) {
@@ -347,30 +364,49 @@ jgblue.listview.Listview.prototype.compute_sort_vals = function (items) {
 }
 
 jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
-    var i, j, item, col, val, link, sort_val,
+    var i, j, item, col, val, link, sort_val, link_fn,
         num_cols = this.cols.length,
         num_items = items.length;
 
     this.update_labels();
 
     sort_val = { val: undefined };
+
     /* load all items and put their data into their respective columns */
     i = (this.cur_page-1) * this.per_page;
     item = items[i];
 
-    for (; i < num_items && i < (this.cur_page*this.per_page); ++i, item=items[i]) {
-        link = g_link(this.template, item.id);
-        tab.push("<tr onclick=\"","window.location.href='",link,"'\">");
+    /* for each item on this page */
+    for (k = 0; i < num_items && i < (this.cur_page*this.per_page); ++i, ++k, item=items[i]) {
+
+        /* grid items row */
+        if (this.is_grid && k == 0) {
+            tab.push("<tr>");
+        }
+    
+        link_fn = this.template.link || g_link;
+        link = link_fn(this.template, item);
+        tab.push("<", this.item_node, " onclick=\"", "window.location.href='", link, "'\">");
 
         for (j=0, col=this.cols[0]; j < num_cols; ++j, col=this.cols[j]) {
-            if (col.compute != undefined)
+            if (col.compute)
                 val = col.compute({template: this.template, item:item, field: col.id, value: item[col.id]}, sort_val);
             else
                 val = item[col.id];
             
-            tab.push("<td style=\"text-align:",col.align,"\">", val, "</td>");
+            if (!this.is_grid) {
+                tab.push("<td style=\"text-align:", col.align,"\">", val, "</td>");
+            } else {
+                tab.push(val);
+            }
         }
-        tab.push("</tr>");
+
+        tab.push("</", this.item_node, ">");
+
+        if (this.is_grid && k == this.template.grid-1) {
+            tab.push("</tr>")
+            k = -1;
+        }
     }
 
 }
@@ -405,21 +441,25 @@ jgblue.listview.Listview.prototype.update_labels = function () {
  */
 jgblue.listview.Listview.prototype.build_table = function () {
     var num_cols = this.cols.length,
-        tab = ["<table width=\"100%\"><thead><tr>"],
+        tab = ["<table width=\"100%\">"],
         col = this.cols[0],
         url = window.location.href + "?json=1",
         i=0;
-    
 
-    /* build column headers from the template */
-    for (i=0; i < num_cols; ++i, col=this.cols[i]) {
-        tab.push("<th style=\"width:", col.width,";text-align:", 
-                    col.align,";\" id=\"col-",col.id,"\">", col.name,"</th>");
+    if (!this.template.skip_head) {
+        tab.push("<thead><tr>"); 
+        /* build column headers from the template */
+        for (i=0; i < num_cols; ++i, col=this.cols[i]) {
+            tab.push("<th style=\"width:", col.width,";text-align:", 
+                        col.align,";\" id=\"col-",col.id,"\"><a href=\"javascript:return false;\">", col.name,"</a></th>");
+        }
+        tab.push("</tr></thead>");
+    } else {
+        tab.push("<thead/>");
     }
-    tab.push("</tr></thead><tbody class=\"lv-body\">");
-    
+
+    tab.push("<tbody class=\"lv-body\">");
     this.build_body(this.data, tab)
-    
     tab.push("</tbody></table>");
     this.parent.append(tab.join(""));
 }
@@ -436,6 +476,19 @@ jgblue.listview.templates = {
              align: "left", width: "60%", compute:g_compute_link, asc: true, cur_asc: false},
             {id: "level", name: "Level", type: "number", align: "center", width: "10%", asc: false }, 
             {id: "item_subclass", name: "Type", type: "number", align: "center", width: "30%", asc: true, compute:g_compute_subclass}
+        ]
+    },
+    screenshots: {
+        id: "screenshot",
+        skip_head: true,
+        pre_div: "#screenshot-form",
+        pre_div_toggler: "#screen-form-toggler",
+        pre_div_auto_search: "upload_ss",
+        link: jgblue.listview.screenshot_link,
+        grid: 4,
+        columns: [
+            {id: "screenshot", name: "Screenshot", type: "custom", align: "center", width: "25%", 
+             compute:jgblue.listview.compute_screenshot} 
         ]
     }
 };

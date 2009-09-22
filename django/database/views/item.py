@@ -5,6 +5,7 @@ from jgblue.database.models.image import *
 from jgblue.database.util.menu import *
 from jgblue.database.util.responses import *
 from jgblue.database.util.serialize import *
+from jgblue.database.enums import *
 from jgblue.database.forms import UploadScreenshotForm
 
 MAX_VIEW_ITEMS = 200
@@ -70,9 +71,10 @@ def index(request, cls, subcls):
 def detail(request, item_id):
 
     upload_msg = ""
+    type = IMAGE_TARGET_DICT["Item"]
 
     if request.GET.has_key('upload_ss'):
-        upload_msg = upload_screenshot(request, IMAGE_TARGET_DICT["Item"], item_id) 
+        upload_msg = upload_screenshot(request, type, item_id) 
 
     format = request.REQUEST.get('format')
 
@@ -98,11 +100,18 @@ def detail(request, item_id):
         ("Revision Note", item.revision_note),
     )
 
+    screenshots = Image.objects.get_images(item_id, type, "Approved");
+    screenshots_shown = screenshots.count()
+
+    # json_items, used in the main page
+    json_screenshots = serialize(screenshots, screenshots_shown, fields=SerializeFields.Image)
+
     # build breadcrumb context menu
     menu = build_item_context(item.item_class, item.item_subclass, item)
 
     data["ss_msg"] = upload_msg
     data["ss_form"] = UploadScreenshotForm()
+    data["json_screenshots"] = json_screenshots
     data["menu"] = menu
     data["item"] = item
     data["quickinfo"] = quickinfo

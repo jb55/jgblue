@@ -126,12 +126,17 @@ img {
     vertical-align: 5px;
 }
 
-.listview table, .tab-page, .tabs div {
+.tab-page, .tabs div {
 	background: #282e36;
 }
 
 .listview table {
 	border-collapse: collapse;
+	background: #242a31;
+}
+
+.grid table td {
+    border: 0 !important;
 }
 
 .listview table th {
@@ -142,10 +147,33 @@ img {
     cursor: pointer;
 }
 
+.pad {
+    padding: 8px;
+}
+
+.listview table th a {
+    text-decoration: none;
+    color: #eee;
+}
+
 .listview table td {
 	padding: 15px 8px 15px 8px;
 	border: 1px solid #191d23;
     cursor: pointer;
+}
+
+.listview .grid-cell {
+    padding: 12px;
+    text-align: center;
+}
+
+.listview .grid-cell p {
+    margin: 0;
+    padding: 0;
+}
+
+#pre-div-bar {
+    padding: 0 0 8px;
 }
 
 .lv-row-highlight {

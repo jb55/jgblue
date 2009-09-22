@@ -26,21 +26,28 @@
         <li><a href="#"><div>Comments</div></a></li>
     </ul>
 </div>
-<div id="submit-screenshot" class="tab-page">
-    <h3>{% trans "Submit a screenshot" %}</h3>
-    Browse for a file from your computer.<br/>
-<p class="form-msg">{{ ss_msg }}</p>
-<form action="?upload_ss" id="screenshotForm" method="post" enctype="multipart/form-data">
-{{ ss_form.as_p }}
-<input type="submit" id="screenshotSubmit" value="Submit"/>
-</form>
-
+<div id="tab-pages">
+    <div id="screenshot-tabpage" class="tab-page">
+        <div id="pre-div-bar">
+            <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
+        </div>
+        <div id="screenshot-form" class="pad">
+            Browse for a file from your computer.<br/>
+            <p class="form-msg">{{ ss_msg }}</p>
+            <form action="?upload_ss" method="post" enctype="multipart/form-data">
+            {{ ss_form.as_p }}
+            <input type="submit" id="screenshot-submit" value="Submit"/>
+            </form>
+        </div>
+        <div id="screenshots-lv" class="listview grid"></div>
+    </div>
 </div>
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript">
-    $(document).ready( function () {
-        jgblue.forms.screenshot_upload("#screenshotForm");
-    });
+    {% autoescape off %}
+    var g_screenshots = {{ json_screenshots }};
+    {% endautoescape %}
+    var ss_lv = jgblue.listview.create({template:"screenshots", parent:"#screenshots-lv"}, g_screenshots)
 </script>
 {% endblock %}

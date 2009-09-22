@@ -1,23 +1,8 @@
 from django.db import models
 from datetime import datetime
+from jgblue.database.managers.image import ImageManager
+from jgblue.database.enums import *
 
-APPROVAL_STATUS = (
-    (0, "Pending"),
-    (1, "Approved"),
-    (2, "Rejected"),
-)
-
-IMAGE_TARGET = (
-    (0, 'Item'),
-    (1, 'Medal'),
-    (2, 'Spacecraft'),
-)
-
-IMAGE_TARGET_DICT = {
-    "Item": 0,
-    "Medal": 1,
-    "Spacecraft": 2,
-}
 
 class Image(models.Model):
     id = models.AutoField(primary_key=True)
@@ -31,6 +16,8 @@ class Image(models.Model):
     description = models.CharField(max_length=200, blank=True)
     approval_status = models.IntegerField(choices=APPROVAL_STATUS)
     rejected_reason = models.CharField(max_length=200, blank=True)
+
+    objects = ImageManager()
 
     @classmethod
     def create(cls, uuid, thumb_uuid, resized_uuid, type, id, user_id=1, description="", 
@@ -50,8 +37,9 @@ class Image(models.Model):
         return img
 
     def __unicode__(self):
-        return " ".join([IMAGE_TARGET[self.target_type][1], self.uuid])
+        return "".join([APPROVAL_STATUS[self.approval_status][1], ": ", self.description])
 
     class Meta():
         db_table = "image"
+        ordering = ("approval_status",)
 

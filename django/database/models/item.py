@@ -1,32 +1,12 @@
 from django.db import models
 from jgblue.database.managers.item import ItemManager
-
-ITEM_CLASS = (
-    'Gun',
-    'Missile',
-    'Shield',
-    'Power Plant',
-    'Armor',
-    'Radar',
-    'Engine',
-    'Mining',
-    'Mod',
-)
-
-ITEM_GUN_CLASS = (
-    'Electron Gun',
-)
-
-ITEM_SUBCLASS = (
-    ITEM_GUN_CLASS,
-)
+from jgblue.database.enums import *
 
 
 UNK_CLASS = "Unknown Class (%d)"
 UNK_SUBCLASS = "Unknown Subclass (%d)"
 
 def get_class_name(class_id):
-
     if class_id > len(ITEM_CLASS) or class_id < 0:
         return UNK_CLASS % class_id
     else:
