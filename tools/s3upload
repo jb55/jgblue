@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOTDIR=/home/jb55/jgblue-dev/upload
+ROOTDIR=/home/jb55/jgblue/upload
 STAGING=$ROOTDIR/staging
 UPLOADED=$ROOTDIR/uploaded
 FILES=*.jpg

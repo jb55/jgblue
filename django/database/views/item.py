@@ -7,6 +7,7 @@ from jgblue.database.util.serialize import *
 from jgblue.database.enums import *
 from jgblue.database.forms import UploadScreenshotForm
 from jgblue.database.util.responses import jgblue_response
+from django.views.decorators.cache import cache_page
 
 MAX_VIEW_ITEMS = 200
 
@@ -26,6 +27,7 @@ def get_item_args(has_cls, has_subcls, cls, subcls):
     
 
 # /items/cls.subcls
+@cache_page(60 * 15)
 def index(request, cls, subcls):
 
     has_cls = cls != ""

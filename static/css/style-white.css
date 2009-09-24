@@ -1,3 +1,5 @@
+@import "http://static.jgblue.com/css/reset.css";
+
 body {
 	background-color: #e8eff4;
 	background-image: url(http://static.jgblue.com/img/bg-fade-w.png);
@@ -7,12 +9,187 @@ body {
 	color: #333;
 }
 
+p {
+	line-height: 20px;
+	margin-top: 15px;
+}
+
+.tooltip {
+	
+	color: #82d0da;
+	width: 240px;
+}
+
+.tooltip table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.tooltip .tooltipdata {
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.border-right, .border-bottom, .border-corner {
+	background: url(http://static.jgblue.com/img/tooltip.png);
+}
+
+.tooltip .border-right {
+	width: 10px;
+	background-position: top right;
+}
+
+.tooltip .border-bottom {
+	height: 10px;
+	background-position: left bottom;
+}
+
+.tooltip .border-corner {
+	background-position: right bottom;
+}
+
+.tooltipdata th {
+	text-align: center;
+	padding: 13px 0 8px 10px;
+	font-weight: bold;
+}
+
+.tooltipdata td {
+	padding: 2px 0 2px 15px;
+}
+
+.tooltip td.price {
+	color: #0F0;
+}
+
+.tooltip td.cls {
+	color: #FF3;
+}
+
+.simple-container {
+    background: #181e22; 
+    padding: 5px;
+}
+
 img {
-	border: 0px;
+    border: 0 none;
+}
+
+.sprites {
+    background-image: url(http://static.jgblue.com/img/sprites.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+
+.sprite-left {
+    background-position: 0 0;
+}
+
+.sprite-left-hl {
+    background-position: 0 -18px;
+}
+
+.sprite-fastleft {
+    background-position: 0 -36px;
+}
+
+.sprite-fastleft-hl {
+    background-position: 0 -54px;
+}
+
+.sprite-right {
+    background-position: 0 -72px;
+}
+
+.sprite-right-hl {
+    background-position: 0 -90px;
+}
+
+.sprite-fastright {
+    background-position: 0 -108px;
+}
+
+.sprite-fastright-hl {
+    background-position: 0 -126px;
+}
+
+#lv-bar {
+    padding: 5px;
+}
+
+#lv-page {
+    float: right;
+}
+
+#lv-page-txt {
+    vertical-align: 5px;
+}
+
+#listview table {
+	background: #282e36;
+}
+
+#listview table {
+	border-collapse: collapse;
+}
+
+#listview table th {
+	background: #2f3740 url(http://static.jgblue.com/img/column-bg.png) top left repeat-x;
+	border: 1px solid #191d23;
+	padding: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#listview table td {
+	padding: 15px 8px 15px 8px;
+	border: 1px solid #191d23;
+    cursor: pointer;
+}
+
+.lv-row-highlight {
+    background-color: #2F3740;
+}
+
+h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #0066ff;
+	/*color: #EEE;*/
+	font-size: 20px;
+	font-weight: normal;
+	border-bottom: solid 1px #15191e;
+	padding-bottom: 3px;
+	margin-bottom: 12px;
+}
+
+#infobox table
+{
+    border-collapse: collapse;
+	width: 100%;
+}
+
+#infobox td
+{
+	width: 50%;
+	padding: 4px 4px 4px 4px;
+}
+
+#infobox tr.alt td {
+	background-color: #2f363f;
+}
+
+h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 120%;
+	margin-bottom:8px;
+	letter-spacing: -1px;
+	padding-bottom: 4px;
+	border-bottom: 1px dotted #15191e;
 }
 
 #container {
-	width: 864px;
+	width: 960px;
 	margin: 0 auto;
 	margin-top: 50px;
 	position: relative;
@@ -24,7 +201,100 @@ img {
 	margin-right: auto;
 }
 
+#context {
+	padding: 10px;
+}
+
+#context li
+{
+	display: inline;
+}
+
+#context li:before
+{
+	content: "\00BB \0020";
+}
+
+#context li.first:before
+{
+	content: "";
+}
+
+#content-wrap {
+	background-color: #181e22;
+	padding: 6px;
+}
+
+
+#content {
+	background-color: #20252b;
+	padding: 10px;
+	border: #101317 solid 1px;
+	overflow: hidden;
+}
+
+#infobox {
+	float: right;
+	width: 300px;
+	border: solid 1px #15191e;
+	background-color: #282e36;
+	padding: 10px;
+}
+
+#menu ul {
+	list-style-position:outside;
+	list-style-type:none;
+}
+
+#menu {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: url(http://static.jgblue.com/img/menu-bg.png) repeat-x;
+	height: 44px;
+	margin-top: 5px;
+	overflow: hidden;
+}
+
+.menulist .first a
+{
+	border-left: none;
+	padding-left: 20px;
+}
+
+.menulist li a
+{
+	padding: 15px 18px 17px;
+}
+
+.menulist li
+{
+	list-style-image: none;
+	background: url(http://static.jgblue.com/img/menu-sep.png) right no-repeat;
+	float: left;
+	margin: 0;
+}
+
+.menulist a
+{
+	text-decoration: none;
+	color: #ddd;
+	display: block;
+}
+
+a {
+	color: #88abff;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.menulist a:hover
+{
+	color: #ddd;
+}
+
 .subheading {
-	
 	text-align: center;
 }
