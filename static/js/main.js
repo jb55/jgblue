@@ -20,7 +20,7 @@ function g_link(template, item) {
 }
 
 function g_compute_link(data, sort_val) {
-    return ["<a href=\"", g_link(data.template, data.item.id), "\">", data.value, "</a>"].join("");
+    return ["<a href=\"", g_link(data.template, data.item), "\">", data.value, "</a>"].join("");
 }
 
 function g_subclass_name(item_class, item_subclass) {

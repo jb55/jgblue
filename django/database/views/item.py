@@ -1,4 +1,3 @@
-from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from jgblue.database.models.item import *
 from jgblue.database.models.image import *
@@ -7,6 +6,7 @@ from jgblue.database.util.responses import *
 from jgblue.database.util.serialize import *
 from jgblue.database.enums import *
 from jgblue.database.forms import UploadScreenshotForm
+from jgblue.database.util.responses import jgblue_response
 
 MAX_VIEW_ITEMS = 200
 
@@ -64,7 +64,7 @@ def index(request, cls, subcls):
     data["items_total"] = items_total
     data["json_items"] = json_items
 
-    return render_to_response("item/index.htm", data)
+    return jgblue_response("item/index.htm", data, request)
 
 
 
@@ -116,4 +116,4 @@ def detail(request, item_id):
     data["item"] = item
     data["quickinfo"] = quickinfo
              
-    return render_to_response("item/detail.htm", data)
+    return jgblue_response("item/detail.htm", data, request)

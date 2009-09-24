@@ -83,6 +83,14 @@ TEMPLATE_DIRS = (
     TEMPLATES_DIR,
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+)
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,6 +99,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'jgblue.database',
 )
+
+AUTH_PROFILE_MODULE = "database.UserProfile"
+LOGIN_REDIRECT_URL = "/user/profile/"
+LOGIN_URL = "/login"
 
 # jgblue settings
 SCREENSHOTS_UPLOAD_DIR = os.path.join(PROJECT_DIR, "upload/tmp") 

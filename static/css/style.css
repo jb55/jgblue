@@ -57,6 +57,16 @@ p {
 	padding: 2px 0 2px 15px;
 }
 
+#user-bar {
+    float: right;
+    width: 500px;
+    text-align: right;
+}
+
+table.generic td {
+    padding: 5px;
+}
+
 .tooltip td.price {
 	color: #0F0;
 }

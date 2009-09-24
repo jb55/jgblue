@@ -1,9 +1,14 @@
 from django.http import HttpResponse
+from django.template import RequestContext
 from jgblue.database.forms import UploadScreenshotForm
 from jgblue.database.models import Image
 from jgblue.database.util.serialize import *
 from jgblue.database.util.file_handlers import *
 from django.utils.translation import ugettext as _
+from django.shortcuts import render_to_response
+
+def jgblue_response(template, data, request, **kwargs):
+    return render_to_response(template, data, context_instance=RequestContext(request), **kwargs)
 
 def json_response(data):
     return HttpResponse(''.join(['(',data,')']), mimetype='application/javascript')
