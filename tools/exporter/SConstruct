@@ -1,0 +1,23 @@
+import os
+import sys
+
+env = Environment(CCFLAGS = '-g -O2 -W -Wall')
+
+Export('env')
+
+dirs = [
+    "fcollada"
+]
+
+buildDir = "build"
+env.Replace(BUILD_DIR = buildDir)
+
+SConscript("SConscript", build_dir=buildDir, duplicate=0)
+
+for dir in dirs:
+    SConscript(
+        dir + os.sep + 'SConscript',
+        build_dir = buildDir + os.sep + dir,
+        duplicate = 0
+        )
+

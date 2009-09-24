@@ -8,7 +8,7 @@ INST_TARGETS=${OUTDIR}jgblue.js
 jgblue.js: combined.js
 	java -jar ${COMPRESSOR} ${ARGS} ${OUTDIR}$< -o ${OUTDIR}$@
 
-combined.js: main.js
+combined.js: ext.js main.js
 	cat $^ > ${OUTDIR}$@ 
 
 .PHONY: install

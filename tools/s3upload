@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ROOTDIR=/home/jb55/jgblue-dev/upload
+STAGING=$ROOTDIR/staging
+UPLOADED=$ROOTDIR/uploaded
+FILES=*.jpg
+TMP=$ROOTDIR/tmp
+OPTS="--add-header=Cache-Control:max-age=94670778"
+OPTS="$OPTS --acl-public"
+DEST=s3://s3.jgblue.com/img/items/
+
+cd $TMP && \
+mv $FILES $STAGING/ 
+cd $STAGING && \
+s3cmd $OPTS put $FILES $DEST && \
+mv $FILES $UPLOADED/
+
