@@ -32,12 +32,16 @@
             <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
         </div>
         <div id="screenshot-form" class="pad">
-            Browse for a file from your computer.<br/>
-            <p class="form-msg">{{ ss_msg }}</p>
-            <form action="?upload_ss" method="post" enctype="multipart/form-data">
-            {{ ss_form.as_p }}
-            <input type="submit" id="screenshot-submit" value="Submit"/>
-            </form>
+            {% if user.is_authenticated %}
+                Browse for a file from your computer.<br/>
+                <p class="form-msg">{{ ss_msg }}</p>
+                <form action="?upload_ss" method="post" enctype="multipart/form-data">
+                {{ ss_form.as_p }}
+                <input type="submit" id="screenshot-submit" value="Submit"/>
+                </form>
+            {% else %}
+                You must be registered to submit screenshots. 
+            {% endif %}
         </div>
         <div id="screenshots-lv" class="listview grid"></div>
     </div>

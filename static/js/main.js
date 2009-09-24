@@ -132,14 +132,16 @@ jgblue.listview.create = function(options, data) {
     return new jgblue.listview.Listview(options, data);
 }
 
+jgblue.listview.screen_root = "http://s3.jgblue.com/img/items/";
+
 jgblue.listview.compute_screenshot = function (data, sort_val) {
-    var content = ["<div class=\"grid-cell\"><img src=\"http://dstatic.jgblue.com/img/tmp_uploads/", data.item.thumb_uuid, "\"/>"];
+    var content = ["<div class=\"grid-cell\"><img src=\"", jgblue.listview.screen_root, data.item.thumb_uuid, "\"/>"];
     content.push("<p>", data.item.description, "</p></div>");
     return content.join("");
 }
 
 jgblue.listview.screenshot_link = function (template, item) {
-    return "http://dstatic.jgblue.com/img/tmp_uploads/" + item.uuid;
+    return jgblue.listview.screen_root + item.uuid;
 }
 
 jgblue.listview.Listview = function (options, data) {
