@@ -18,8 +18,9 @@
 
 {% block content %}
 <h1>{{ item.name }}</h1>
-{% include "item/tooltip.htm" %}
+{% include "tooltip.htm" %}
 <h2>{% trans "Related" %}</h2>
+<a name="uploaded"></a>
 <div class="tabs-container">
     <ul class="tabs">
         <li><a href="#"><div>Screenshots</div></a></li>
@@ -31,19 +32,30 @@
         <div id="pre-div-bar">
             <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
         </div>
-        <div id="screenshot-form" class="pad">
+        <div id="screenshot-form" class="text pad">
             {% if user.is_authenticated %}
-                Browse for a file from your computer.<br/>
-                <p class="form-msg">{{ ss_msg }}</p>
+                <p>Browse for a file on your computer.
+                JPG, PNG, and GIF files are currently supported.</p>
+                {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li><span>{{ message }}</span></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
                 <form action="?upload_ss" method="post" enctype="multipart/form-data">
-                {{ ss_form.as_p }}
+                <table class="generic">
+                {{ ss_form.as_table }}
+                </table>
                 <input type="submit" id="screenshot-submit" value="Submit"/>
                 </form>
             {% else %}
                 You must be registered to submit screenshots. 
             {% endif %}
         </div>
-        <div id="screenshots-lv" class="listview grid"></div>
+        <div id="screenshots-lv" class="listview grid">
+            {% include "controls/listview-bar.htm" %}
+        </div>
     </div>
 </div>
 {% endblock %}

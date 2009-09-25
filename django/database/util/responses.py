@@ -4,6 +4,7 @@ from jgblue.database.forms import UploadScreenshotForm
 from jgblue.database.models import Image
 from jgblue.database.util.serialize import *
 from jgblue.database.util.file_handlers import *
+from jgblue.database.util.misc import user_msg
 from django.utils.translation import ugettext as _
 from django.shortcuts import render_to_response
 
@@ -53,5 +54,5 @@ def upload_screenshot(request, type, id):
     else:
         resp = _("Method is not POST")
 
-    return resp 
+    user_msg(resp, request)
 

@@ -3,7 +3,8 @@ import uuid
 def gen_uuid():
     return str(uuid.uuid4()).replace('-','')
 
-
+def user_msg(message, request, **kwargs):
+    request.user.message_set.create(message=message, **kwargs)
 
 def make_thumbnail(src, dest, size=(192,192)):
     """

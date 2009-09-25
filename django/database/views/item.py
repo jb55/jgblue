@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from jgblue.database.models.item import *
 from jgblue.database.models.image import *
 from jgblue.database.util.menu import *
@@ -60,6 +60,7 @@ def index(request, cls, subcls):
     menu = build_item_context(cls, subcls)
 
     data["menu"] = menu
+    data["precalc_lv_note"] = True
     data["items_displayed"] = items_shown
     data["items_total"] = items_total
     data["json_items"] = json_items
@@ -73,8 +74,10 @@ def detail(request, item_id):
     upload_msg = ""
     type = IMAGE_TARGET_DICT["Item"]
 
+    # handle screenshot uploads
     if request.GET.has_key('upload_ss'):
-        upload_msg = upload_screenshot(request, type, item_id) 
+        upload_screenshot(request, type, item_id) 
+        return HttpResponseRedirect("/item/" + item_id + "#uploaded");
 
     format = request.REQUEST.get('format')
 
@@ -109,11 +112,11 @@ def detail(request, item_id):
     # build breadcrumb context menu
     menu = build_item_context(item.item_class, item.item_subclass, item)
 
-    data["ss_msg"] = upload_msg
     data["ss_form"] = UploadScreenshotForm()
     data["json_screenshots"] = json_screenshots
     data["menu"] = menu
     data["item"] = item
+    data["tooltip"] = Tooltip(item)
     data["quickinfo"] = quickinfo
              
     return jgblue_response("item/detail.htm", data, request)

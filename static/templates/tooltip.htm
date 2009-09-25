@@ -1,0 +1,26 @@
+<div class="tooltip">
+    <table>
+        <tr><td>
+        <table class="tooltipdata">
+            {% if tooltip.has_item_tooltip %}
+                {% if tooltip.has_name %}<tr><th>{{ item.name }}</th></tr>{% endif %}
+                {% if tooltip.has_sell_price %}<tr><td class="price">Sell Price / Unit: {{ item.sell_price }}</td></tr>{% endif %}
+                {% if tooltip.has_item_class %}<tr><td class="cls">{{ item.item_class_str }}</td></tr>{% endif %}
+                {% if tooltip.has_level %}<tr><td>Level: {{ item.level }}</td></tr>{% endif %}
+                {% if tooltip.has_dps %}<tr><td>DPS: {{ item.dps }}</td></tr>{% endif %}
+                {% if tooltip.has_damage %}<tr><td>Damage: {{ item.damage }}</td></tr>{% endif %}
+                {% if tooltip.has_fire_rate %}<tr><td>Fire Rate: {{ item.fire_rate }} Per Second</td></tr>{% endif %}
+                {% if tooltip.has_power_use %}<tr><td>Power Use: {{ item.power_use }}</td></tr>{% endif %}
+                {% if tooltip.has_size %}<tr><td>Size: {{ item.size }}</td></tr>{% endif %}
+                {% if tooltip.has_mass %}<tr><td>Mass: {{ item.mass }}</td></tr>{% endif %}
+                {% if tooltip.has_item_subclass %}<tr><td>&nbsp;</td></tr><tr><td>&nbsp;</td></tr>
+                <tr><td>{{ item.item_subclass_str }}</td></tr>{% endif %}
+            {% endif %}
+            {% if tooltip.custom_text %}<tr><td>{{ tooltip.custom_text }}</td></tr>{% endif %}
+        </table></td><td class="border-right"></td></tr>
+        <tr>
+        <td class="border-bottom"></td>
+        <td class="border-corner"></td>
+        </tr>
+    </table>
+</div>

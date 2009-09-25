@@ -1,5 +1,5 @@
 // JGBlue.com
-var jgblue = {};
+var jgblue = jgblue || {};
 
 /* -------------------------------
  *  Global functions
@@ -113,6 +113,8 @@ function g_sort(array, on_field, order) {
 /* data index */
 jgblue.index = jgblue.index || {};
 
+
+
 /* ----------------------------------
  * Tooltips
  * ----------------------------------
@@ -154,9 +156,10 @@ jgblue.listview.Listview = function (options, data) {
     this.parent_str = options.parent;
     this.parent = $(options.parent);
     this.data = data.items;
-    this.per_page = 50;
+    this.per_page = this.template.per_page || 50;
     this.cur_page = 1;
     this.arrows = {};
+    this.sort_orders = [];
 
     this.last_page = Math.ceil(data.items.length / this.per_page);
     if ( this.last_page === 0 )
@@ -211,6 +214,7 @@ jgblue.listview.Listview.prototype.register_events = function () {
             saved_asc = col.cur_asc;
             lv.reset_sort_orders();
             col.cur_asc = !saved_asc;
+
         });
     }
 
@@ -323,10 +327,10 @@ jgblue.listview.Listview.prototype.reset_sort_orders = function () {
         this.cols[i].cur_asc = this.cols[i].asc;
 }
 
-jgblue.listview.Listview.prototype.sort = function (column_id, order) {
+jgblue.listview.Listview.prototype.sort = function (col_id, order) {
     var body = [];
     this.body.empty();
-    this.data = g_sort(this.data, column_id, order);
+    this.data = g_sort(this.data, col_id, order);
     this.build_body(this.data, body);
     this.body.append(body.join(""));
 }
@@ -485,9 +489,10 @@ jgblue.listview.templates = {
         skip_head: true,
         pre_div: "#screenshot-form",
         pre_div_toggler: "#screen-form-toggler",
-        pre_div_auto_search: "upload_ss",
+        pre_div_auto_hash: "uploaded",
         link: jgblue.listview.screenshot_link,
         grid: 4,
+        per_page: 16,
         columns: [
             {id: "screenshot", name: "Screenshot", type: "custom", align: "center", width: "25%", 
              compute:jgblue.listview.compute_screenshot} 

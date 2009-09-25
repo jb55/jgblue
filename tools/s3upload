@@ -3,7 +3,7 @@
 ROOTDIR=/home/jb55/jgblue-dev/upload
 STAGING=$ROOTDIR/staging
 UPLOADED=$ROOTDIR/uploaded
-FILES=*.jpg
+FILES=*
 TMP=$ROOTDIR/tmp
 OPTS="--add-header=Cache-Control:max-age=94670778"
 OPTS="$OPTS --acl-public"
