@@ -1,176 +1,225 @@
+/* init the o3djs api only when we create the client */
 o3djs.require('o3djs.util');
 o3djs.require('o3djs.math');
 o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.primitives');
 o3djs.require('o3djs.effect');
 
-// global variables
-var g_o3dElement;
+var jgblue = jgblue || {};
+jgblue.j3d = jgblue.j3d || {};
+
 var g_client;
-var g_o3d;
-var g_math;
-var g_pack;
-var g_viewInfo;
-var g_clockParam;
 
-/**
- * Creates the client area.
- */
-function init() {
-  // These are here so that they are visible to both the browser (so
-  // selenium sees them) and the embedded V8 engine.
-  window.g_clock = 0;
-  window.g_timeMult = 1;
-  window.g_finished = false;  // for selenium testing.
+jgblue.j3d.Entity = Class.extend({
+    
+    init: function () {
+        this.client = jgblue.j3d.client;
+        this.oclient = jgblue.j3d.client.client;
+        this.loc_transform = this.client.pack.createObject('Transform');
+        this.loc_transform.parent = this.client.root;
+        this.rot_transform = this.client.pack.createObject('Transform');
+        this.rot_transform.parent = this.loc_transform;
+    },
 
-  // Comment out the line below to run the sample in the browser
-  // JavaScript engine.  This may be helpful for debugging.
-  o3djs.util.setMainEngine(o3djs.util.Engine.V8);
+    move: function (x, y, z) {
+        this.loc_transform.translate([x ? x : 0, y ? y : 0, z ? z : 0]);
+    },
 
-  o3djs.util.makeClients(initStep2, 'LargeGeometry');
+    rotateY: function (amount) {
+        this.rot_transform.identity();
+        this.rot_transform.rotateY(amount * this.client.clock);
+    },
+
+    setUpdateFn: function (fn) {
+        this.update = fn;
+    },
+
+    update: function () {
+        // implement me
+    }
+
+});
+
+jgblue.j3d.Primitive = jgblue.j3d.Entity.extend({
+    
+    init: function (material) {
+        this._super();
+        var pack = this.client.pack;
+
+        this.shape = pack.createObject('Shape');
+        this.primitive = pack.createObject('Primitive');
+        this.streamBank = pack.createObject('StreamBank');
+        this.primitive.material = material;
+        this.primitive.owner = this.shape;
+        this.primitive.streamBank = this.streamBank;
+        this.rot_transform.addShape(this.shape);
+    }
+
+});
+
+jgblue.j3d.Cube = jgblue.j3d.Primitive.extend({
+
+    init: function (material) {
+        // TODO: pass a material to super
+        this._super(material);
+        var pack = this.client.pack;
+
+        this.primitive.primitiveType = this.client.o3d.Primitive.TRIANGLELIST;
+        this.primitive.numberPrimitives = 12;
+        this.primitive.numberVertices = 8;
+
+        this.primitive.createDrawElement(pack, null);
+
+        var positionArray = [
+            -0.5, -0.5,  0.5,  // vertex 0
+             0.5, -0.5,  0.5,  // vertex 1
+            -0.5,  0.5,  0.5,  // vertex 2
+             0.5,  0.5,  0.5,  // vertex 3
+            -0.5,  0.5, -0.5,  // vertex 4
+             0.5,  0.5, -0.5,  // vertex 5
+            -0.5, -0.5, -0.5,  // vertex 6
+             0.5, -0.5, -0.5   // vertex 7
+        ];
+
+        var indicesArray = [
+            0, 1, 2,  // face 1
+            2, 1, 3,
+            2, 3, 4,  // face 2
+            4, 3, 5,
+            4, 5, 6,  // face 3
+            6, 5, 7,
+            6, 7, 0,  // face 4
+            0, 7, 1,
+            1, 7, 3,  // face 5
+            3, 7, 5,
+            6, 0, 4,  // face 6
+            4, 0, 2
+        ];
+
+        var positionsBuffer = pack.createObject('VertexBuffer');
+        var positionsField = positionsBuffer.createField('FloatField', 3);
+        positionsBuffer.set(positionArray);
+
+        var indexBuffer = pack.createObject('IndexBuffer');
+        indexBuffer.set(indicesArray);
+
+        // Associate the positions buffer with the stream bank
+        this.streamBank.setVertexStream(
+            this.client.o3d.Stream.POSITION, // this stream stores vertex positions
+            0,                               // first position of stream
+            positionsField,                  // the field this stream uses 
+            0);                              // step amount
+
+        this.primitive.indexBuffer = indexBuffer;
+    }
+
+});
+
+jgblue.j3d.Spacecraft = jgblue.j3d.Entity.extend({
+
+    init: function () {
+        this._super();
+    }
+
+});
+
+jgblue.j3d.Client = function (onInit) {
+
+    var that = this;
+    o3djs.util.makeClients( function (clientElements) {
+        var o3dElement = clientElements[0]; 
+        that.o3d = o3dElement.o3d;
+        that.math = o3djs.math;
+        that.client = o3dElement.client;
+        that.clock = 0;
+        that.timeMult = 1;
+
+        that.pack = that.client.createPack();
+        that.view = o3djs.rendergraph.createBasicView(
+            that.pack,
+            that.client.root,
+            that.client.renderGraphRoot
+        );
+        that.view.drawContext.projection = that.math.matrix4.perspective(
+            that.math.degToRad(30), // 30 degree fov.
+            that.client.width / that.client.height,
+            1,                  // Near plane.
+            5000);              // Far plane.
+
+        that.view.drawContext.view = that.math.matrix4.lookAt([0, 1, 5],  // eye
+                                                              [0, 0, 0],  // target 
+                                                              [0, 1, 0]); // up
+
+        /* create a transform to put data on */
+        that.root = that.pack.createObject('Transform');
+
+        /* connect the data root to the client */
+        that.root.parent = that.client.root;
+        that.entities = [];
+
+        that.client.setRenderCallback(that.renderCallback);
+        if (onInit) {
+            onInit(that);
+        }
+    });
+
 }
 
-
-/**
- * Initializes global variables, positions camera, creates the material, and
- * draws the plane.
- * @param {Array} clientElements Array of o3d object elements.
- */
-function initStep2(clientElements) {
-  // Init global variables.
-  initGlobals(clientElements);
-
-  // Set up the view and projection transformations.
-  initContext();
-
-  // Add the shapes to the transform heirarchy.
-  createPlane();
-
-  // Setup render callback.
-  g_client.setRenderCallback(onRender);
-
-  window.g_finished = true;  // for selenium testing.
+jgblue.j3d.createClient = function (onInit) {
+    jgblue.j3d.client = jgblue.j3d.client || new jgblue.j3d.Client(onInit);
+    return jgblue.j3d.client;
 }
 
+jgblue.j3d.Client.prototype.createTestMaterial = function () {
+    // Create an Effect object and initialize it using the shaders from the
+    // text area.
+    var redEffect = this.pack.createObject('Effect');
+    var shaderString = document.getElementById('effect').value;
+    redEffect.loadFromFXString(shaderString);
 
-/**
- * Initializes global variables and libraries.
- * @param {Array} clientElements An array of o3d object elements assumed
- *   to have one entry.
- */
-function initGlobals(clientElements) {
-  g_o3dElement = clientElements[0];
-  g_o3d = g_o3dElement.o3d;
-  g_math = o3djs.math;
+    // Create a Material for the mesh.
+    var redMaterial = this.pack.createObject('Material');
 
-  // Set window.g_client as well.  Otherwise when the sample runs in
-  // V8, selenium won't be able to find this variable (it can only see
-  // the browser environment).
-  window.g_client = g_client = g_o3dElement.client;
+    // Set the material's drawList.
+    redMaterial.drawList = this.view.performanceDrawList;
 
-  // Create a pack to manage the objects created.
-  g_pack = g_client.createPack();
+    // Apply our effect to this material. The effect tells the 3D hardware
+    // which shaders to use.
+    redMaterial.effect = redEffect;
 
-  // Create the render graph for a view.
-  g_viewInfo = o3djs.rendergraph.createBasicView(
-      g_pack,
-      g_client.root,
-      g_client.renderGraphRoot);
+    return redMaterial;
 }
 
+jgblue.j3d.Client.prototype.renderCallback = function (renderEvent) {
+    var that = jgblue.j3d.client;
+    that.clock += renderEvent.elapsedTime * that.timeMult;
 
-/**
- * Sets up reasonable view and projection matrices.
- */
-function initContext() {
-  // Set up a perspective transformation for the projection.
-  g_viewInfo.drawContext.projection = g_math.matrix4.perspective(
-      g_math.degToRad(30), // 30 degree frustum.
-      g_client.width / g_client.height, // Aspect ratio.
-      1,                  // Near plane.
-      5000);              // Far plane.
-
-  // Set up our view transformation to look towards the world origin where the
-  // cube is located.
-  g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
-      [4, 4, 4],   // eye
-      [0, 0, 0],   // target
-      [0, 1, 0]);  // up
+    for (var i = 0; i < that.entities.length; ++i) {
+        var ent = that.entities[i];
+        ent.update();
+    }
 }
 
-
-/**
- * Creates an effect using the shaders in the textarea in the document, applies
- * the effect to a new material, binds the uniform parameters of the shader
- * to parameters of the material, and sets certain parameters: the light and
- * camera position.
- * @return {Material} The material.
- */
-function createMaterial() {
-  // Create a new, empty Material and Effect object.
-  var material = g_pack.createObject('Material');
-  var effect = g_pack.createObject('Effect');
-
-  // Load shader string from document.
-  var shaderString = o3djs.util.getElementContentById('effect');
-  effect.loadFromFXString(shaderString);
-
-  // Apply the effect to this material.
-  material.effect = effect;
-
-  // Bind uniform parameters declared in shader to parameters of material.
-  effect.createUniformParameters(material);
-
-  // Set the material's drawList.
-  material.drawList = g_viewInfo.performanceDrawList;
-
-  // Set light and camera positions for the pixel shader.
-  material.getParam('lightWorldPos').value = [3, 10, 0];
-  material.getParam('cameraWorldPos').value = [1, 3, 12];
-
-  // Look up clock param.
-  g_clockParam = material.getParam('clock');
-
-  return material;
+jgblue.j3d.Client.prototype.addEntity = function (entity) {
+    if (entity instanceof Array) {
+        for (var i = 0; i < entity.length; ++i) {
+            this.entities.push(entity[i]);
+        }
+    } else {
+        this.entities.push(entity);
+    }
 }
 
+jgblue.j3d.Client.prototype.loadTestScene = function () {
+    var testMaterial = this.createTestMaterial();
+    var cube = new jgblue.j3d.Cube(testMaterial);
+    cube.setUpdateFn(cubeUpdate);
+    this.addEntity(cube);
 
-/**
- * Creates the plane using the primitives utility library, and adds it to the
- * transform graph at the root node.
- */
-function createPlane() {
-  // This will create a plane subdivided into 180,000 triangles.
-  var plane = o3djs.primitives.createPlane(
-      g_pack, createMaterial(), 4, 4, 300, 300);
-
-  // Add the shape to the transform heirarchy.
-  g_client.root.addShape(plane);
+    function cubeUpdate() {
+        this.rotateY(3.0); 
+        this.move(0.001, 0.001);
+    }
 }
 
-
-/**
- * Updates the clock for the animation.
- * @param {!o3d.RenderEvent} renderEvent Rendering Information.
- */
-function onRender(renderEvent) {
-  var elapsedTime = renderEvent.elapsedTime;
-
-  // Update g_clock in the browser and cache a V8 copy that can be
-  // accessed efficiently. g_clock must be in the browser for selenium.
-  var clock = window.g_clock + elapsedTime * window.g_timeMult;
-  window.g_clock = clock;
-
-  g_clockParam.value = clock;
-}
-
-
-/**
- * Cleanup before exiting.
- */
-function unload() {
-  if (g_client) {
-    g_client.cleanup();
-  }
-}
 
