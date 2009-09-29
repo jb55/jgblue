@@ -8,8 +8,6 @@ o3djs.require('o3djs.effect');
 var jgblue = jgblue || {};
 jgblue.j3d = jgblue.j3d || {};
 
-var g_client;
-
 jgblue.j3d.Entity = Class.extend({
     
     init: function () {
@@ -22,12 +20,23 @@ jgblue.j3d.Entity = Class.extend({
     },
 
     move: function (x, y, z) {
-        this.loc_transform.translate([x ? x : 0, y ? y : 0, z ? z : 0]);
+        this.loc_transform.translate([x?x:0, y?y:0, z?z:0]);
     },
 
     rotateY: function (amount) {
         this.rot_transform.identity();
         this.rot_transform.rotateY(amount * this.client.clock);
+    },
+
+    rotateX: function (amount) {
+        this.rot_transform.identity();
+        this.rot_transform.rotateX(amount * this.client.clock);
+    },
+
+    rotate: function (x, y, z) {
+        var vec = this.client.math.mulVectorScalar([x?x:0, y?y:0, z?z:0], this.client.clock); 
+        this.rot_transform.identity();
+        this.rot_transform.rotateZYX(vec);
     },
 
     setUpdateFn: function (fn) {
@@ -138,8 +147,10 @@ jgblue.j3d.Client = function (onInit) {
         that.view = o3djs.rendergraph.createBasicView(
             that.pack,
             that.client.root,
-            that.client.renderGraphRoot
+            that.client.renderGraphRoot,
+            [32/255, 37/255, 43/255, 1.0]
         );
+
         that.view.drawContext.projection = that.math.matrix4.perspective(
             that.math.degToRad(30), // 30 degree fov.
             that.client.width / that.client.height,
@@ -149,7 +160,6 @@ jgblue.j3d.Client = function (onInit) {
         that.view.drawContext.view = that.math.matrix4.lookAt([0, 1, 5],  // eye
                                                               [0, 0, 0],  // target 
                                                               [0, 1, 0]); // up
-
         /* create a transform to put data on */
         that.root = that.pack.createObject('Transform');
 
@@ -213,13 +223,21 @@ jgblue.j3d.Client.prototype.addEntity = function (entity) {
 jgblue.j3d.Client.prototype.loadTestScene = function () {
     var testMaterial = this.createTestMaterial();
     var cube = new jgblue.j3d.Cube(testMaterial);
+    //var cube2 = new jgblue.j3d.Cube(testMaterial);
     cube.setUpdateFn(cubeUpdate);
+    //cube2.setUpdateFn(cubeUpdate2);
     this.addEntity(cube);
+    //this.addEntity(cube2);
 
     function cubeUpdate() {
-        this.rotateY(3.0); 
-        this.move(0.001, 0.001);
+        this.move(0.0, 0.0, -0.05);
+        this.rotate(2.0, 1.0);
     }
+/*
+    function cubeUpdate2() {
+        this.move(0.0, 0.0, -0.01);
+        this.rotate(2.0, 1.0);
+    }*/
 }
 
 

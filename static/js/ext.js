@@ -72,6 +72,6 @@ Array.prototype.swap = function (a, b) {
 }
 
 String.prototype.contains = function (str) {
-    return String.indexOf(str, 0) != -1;
+    return this.indexOf(str, 0) != -1;
 }
 

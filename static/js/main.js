@@ -110,6 +110,14 @@ function g_sort(array, on_field, order) {
     return g_msort(array, on_field, order);
 }
 
+
+jgblue.j3d = jgblue.j3d || {};
+
+jgblue.j3d.loadModule = function (fn) {
+    $.getScript("http://dstatic.jgblue/js/jgblue.js", fn);
+}
+
+
 /* data index */
 jgblue.index = jgblue.index || {};
 
