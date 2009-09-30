@@ -4,15 +4,54 @@ o3djs.require('o3djs.math');
 o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.primitives');
 o3djs.require('o3djs.effect');
+o3djs.require('o3djs.io');
+o3djs.require('o3djs.arcball');
+o3djs.require('o3djs.material');
+o3djs.require('o3djs.quaternion');
 
 var jgblue = jgblue || {};
 jgblue.j3d = jgblue.j3d || {};
 
+jgblue.j3d.getTexture = function (textureName, callback) {
+
+    var lookup = jgblue.j3d.pack.getObjects(textureName, 'o3d.Texture');
+
+    var assetDir = "/j3d/assets/textures/";
+    o3djs.io.loadTexture(jgblue.j3d.pack, assetDir + textureName, function (texture, exception) {
+        if (!exception) {
+            texture.name = textureName;
+        } else {
+            window.console.log(exception);
+        }
+
+        callback(texture, exception);
+    });
+};
+
+jgblue.j3d.getMaterial = function (shader) {
+    var client = jgblue.j3d;
+    var material = o3djs.material.createMaterialFromFile(client.pack, 
+        "shaders/" + shader, client.view.performanceDrawList);
+
+    return material;
+};
+
+jgblue.j3d.getTextureMaterial = function (textureName, callback) {
+    jgblue.j3d.getTexture(textureName, function (texture) {
+        var material = jgblue.j3d.getMaterial("texture-only.shader");
+        jgblue.j3d.sampler.texture = texture;
+
+        material.getParam('texSampler0').value = jgblue.j3d.sampler;
+        callback(material);
+    });
+};
+
 jgblue.j3d.Entity = Class.extend({
     
     init: function () {
-        this.client = jgblue.j3d.client;
-        this.oclient = jgblue.j3d.client.client;
+        this.pos = [0.0, 0.0, 0.0];
+        this.client = jgblue.j3d;
+        this.oclient = jgblue.j3d.client;
         this.loc_transform = this.client.pack.createObject('Transform');
         this.loc_transform.parent = this.client.root;
         this.rot_transform = this.client.pack.createObject('Transform');
@@ -20,7 +59,14 @@ jgblue.j3d.Entity = Class.extend({
     },
 
     move: function (x, y, z) {
-        this.loc_transform.translate([x?x:0, y?y:0, z?z:0]);
+        var clock = this.client.clock;
+
+        this.pos[0] += (x?x:0 * clock);
+        this.pos[1] += (y?y:0 * clock);
+        this.pos[2] += (z?z:0 * clock);
+
+        this.loc_transform.identity();
+        this.loc_transform.translate(this.pos);
     },
 
     rotateY: function (amount) {
@@ -29,7 +75,7 @@ jgblue.j3d.Entity = Class.extend({
     },
 
     rotateX: function (amount) {
-        this.rot_transform.identity();
+        this.rot_transfo;rm.identity();
         this.rot_transform.rotateX(amount * this.client.clock);
     },
 
@@ -51,75 +97,38 @@ jgblue.j3d.Entity = Class.extend({
 
 jgblue.j3d.Primitive = jgblue.j3d.Entity.extend({
     
-    init: function (material) {
+    init: function (shape) {
         this._super();
-        var pack = this.client.pack;
+        
+    },
 
-        this.shape = pack.createObject('Shape');
-        this.primitive = pack.createObject('Primitive');
-        this.streamBank = pack.createObject('StreamBank');
-        this.primitive.material = material;
-        this.primitive.owner = this.shape;
-        this.primitive.streamBank = this.streamBank;
-        this.rot_transform.addShape(this.shape);
+    getShape: function () {
+        return this.shape;
+    },
+
+    setTexture: function (name) {
+        var texture = jgblue.j3d.getTexture(name);
+        
     }
 
 });
 
 jgblue.j3d.Cube = jgblue.j3d.Primitive.extend({
 
-    init: function (material) {
-        // TODO: pass a material to super
-        this._super(material);
+    init: function (material, instOf) {
+        this._super(material, shape);
+
         var pack = this.client.pack;
+        var shape;
 
-        this.primitive.primitiveType = this.client.o3d.Primitive.TRIANGLELIST;
-        this.primitive.numberPrimitives = 12;
-        this.primitive.numberVertices = 8;
+        if (instOf) {
+            shape = instOf.getShape();
+        } else {
+            shape = o3djs.primitives.createCube(pack, material, 1.0);
+        }
 
-        this.primitive.createDrawElement(pack, null);
-
-        var positionArray = [
-            -0.5, -0.5,  0.5,  // vertex 0
-             0.5, -0.5,  0.5,  // vertex 1
-            -0.5,  0.5,  0.5,  // vertex 2
-             0.5,  0.5,  0.5,  // vertex 3
-            -0.5,  0.5, -0.5,  // vertex 4
-             0.5,  0.5, -0.5,  // vertex 5
-            -0.5, -0.5, -0.5,  // vertex 6
-             0.5, -0.5, -0.5   // vertex 7
-        ];
-
-        var indicesArray = [
-            0, 1, 2,  // face 1
-            2, 1, 3,
-            2, 3, 4,  // face 2
-            4, 3, 5,
-            4, 5, 6,  // face 3
-            6, 5, 7,
-            6, 7, 0,  // face 4
-            0, 7, 1,
-            1, 7, 3,  // face 5
-            3, 7, 5,
-            6, 0, 4,  // face 6
-            4, 0, 2
-        ];
-
-        var positionsBuffer = pack.createObject('VertexBuffer');
-        var positionsField = positionsBuffer.createField('FloatField', 3);
-        positionsBuffer.set(positionArray);
-
-        var indexBuffer = pack.createObject('IndexBuffer');
-        indexBuffer.set(indicesArray);
-
-        // Associate the positions buffer with the stream bank
-        this.streamBank.setVertexStream(
-            this.client.o3d.Stream.POSITION, // this stream stores vertex positions
-            0,                               // first position of stream
-            positionsField,                  // the field this stream uses 
-            0);                              // step amount
-
-        this.primitive.indexBuffer = indexBuffer;
+        this.shape = shape;
+        this.rot_transform.addShape(shape);
     }
 
 });
@@ -132,18 +141,36 @@ jgblue.j3d.Spacecraft = jgblue.j3d.Entity.extend({
 
 });
 
-jgblue.j3d.Client = function (onInit) {
+jgblue.j3d.init = function (options, onInit) {
 
-    var that = this;
+    var that = jgblue.j3d;
+    
+    if (options.focusIndicator) {
+        that.focusIndicator = $(options.focusIndicator);
+    }
+
+    that.hasFocus = false;
+    $(document).focus( function () {
+        that.lostFocus();
+    });
+
     o3djs.util.makeClients( function (clientElements) {
         var o3dElement = clientElements[0]; 
+        that.o3dElement = o3dElement;
         that.o3d = o3dElement.o3d;
         that.math = o3djs.math;
+        that.quaternions = o3djs.quaternions;
         that.client = o3dElement.client;
         that.clock = 0;
         that.timeMult = 1;
 
         that.pack = that.client.createPack();
+        that.root = that.pack.createObject('Transform');
+
+        /* connect the data root to the client */
+        that.root.parent = that.client.root;
+        that.entities = [];
+
         that.view = o3djs.rendergraph.createBasicView(
             that.pack,
             that.client.root,
@@ -151,36 +178,69 @@ jgblue.j3d.Client = function (onInit) {
             [32/255, 37/255, 43/255, 1.0]
         );
 
-        that.view.drawContext.projection = that.math.matrix4.perspective(
-            that.math.degToRad(30), // 30 degree fov.
-            that.client.width / that.client.height,
-            1,                  // Near plane.
-            5000);              // Far plane.
+        /* global params */
+        that.global = o3djs.material.createAndBindStandardParams(that.pack);
+        that.global.lightWorldPos.value = [30, 60, 40];
+        that.global.lightColor.value = [1, 1, 1, 1];
 
-        that.view.drawContext.view = that.math.matrix4.lookAt([0, 1, 5],  // eye
-                                                              [0, 0, 0],  // target 
-                                                              [0, 1, 0]); // up
-        /* create a transform to put data on */
-        that.root = that.pack.createObject('Transform');
+        /* sampler */
+        that.sampler = that.pack.createObject('Sampler');
+        that.sampler.minFilter = that.o3d.Sampler.ANISOTROPIC;
+        that.sampler.maxAnisotropy = 4;
 
-        /* connect the data root to the client */
-        that.root.parent = that.client.root;
-        that.entities = [];
+        /* events */
+        o3djs.event.addEventListener(that.o3dElement, 'resize', that.onResize);
+        o3djs.event.addEventListener(that.o3dElement, 'mousedown', that.startDragging);
+        o3djs.event.addEventListener(that.o3dElement, 'mousemove', that.drag);
+        o3djs.event.addEventListener(that.o3dElement, 'mouseup', that.stopDragging);
+        
 
-        that.client.setRenderCallback(that.renderCallback);
+        /* arcball */
+        that.arcball = o3djs.arcball.create(that.client.width, that.client.height);
+
+        that.client.renderMode = that.o3d.Client.RENDERMODE_ON_DEMAND;
+        that.initContext();
+
+        that.client.render();
+
         if (onInit) {
             onInit(that);
         }
     });
 
-}
+};
 
-jgblue.j3d.createClient = function (onInit) {
-    jgblue.j3d.client = jgblue.j3d.client || new jgblue.j3d.Client(onInit);
-    return jgblue.j3d.client;
-}
+jgblue.j3d.initContext = function () {
+    var that = jgblue.j3d;
 
-jgblue.j3d.Client.prototype.createTestMaterial = function () {
+    that.eyeView = [0, 1, 5];
+    that.isDragging = false;
+    that.root.identity();
+    that.lastRot = that.math.matrix4.identity();
+    that.thisRot = that.math.matrix4.identity();
+
+    that.onResize();
+    that.view.drawContext.view = that.math.matrix4.lookAt(
+        that.eyeView,  // eye
+        [0, 0, 0],  // target 
+        [0, 1, 0]); // up
+};
+
+jgblue.j3d.onResize = function () {
+    var that = jgblue.j3d;
+    that.view.drawContext.projection = that.math.matrix4.perspective(
+        that.math.degToRad(30), // 30 degree fov.
+        that.client.width / that.client.height,
+        1,                  // Near plane.
+        5000);              // Far plane.
+};
+
+jgblue.j3d.createClient = function (options, onInit) {
+    jgblue.j3d.init(options, onInit);
+    return jgblue.j3d;
+};
+
+jgblue.j3d.createTestMaterial = function () {
     // Create an Effect object and initialize it using the shaders from the
     // text area.
     var redEffect = this.pack.createObject('Effect');
@@ -198,19 +258,19 @@ jgblue.j3d.Client.prototype.createTestMaterial = function () {
     redMaterial.effect = redEffect;
 
     return redMaterial;
-}
+};
 
-jgblue.j3d.Client.prototype.renderCallback = function (renderEvent) {
-    var that = jgblue.j3d.client;
+jgblue.j3d.render = function (renderEvent) {
+    var that = jgblue.j3d;
     that.clock += renderEvent.elapsedTime * that.timeMult;
 
     for (var i = 0; i < that.entities.length; ++i) {
         var ent = that.entities[i];
         ent.update();
     }
-}
+};
 
-jgblue.j3d.Client.prototype.addEntity = function (entity) {
+jgblue.j3d.addEntity = function (entity) {
     if (entity instanceof Array) {
         for (var i = 0; i < entity.length; ++i) {
             this.entities.push(entity[i]);
@@ -218,26 +278,70 @@ jgblue.j3d.Client.prototype.addEntity = function (entity) {
     } else {
         this.entities.push(entity);
     }
-}
+};
 
-jgblue.j3d.Client.prototype.loadTestScene = function () {
-    var testMaterial = this.createTestMaterial();
-    var cube = new jgblue.j3d.Cube(testMaterial);
-    //var cube2 = new jgblue.j3d.Cube(testMaterial);
-    cube.setUpdateFn(cubeUpdate);
-    //cube2.setUpdateFn(cubeUpdate2);
-    this.addEntity(cube);
-    //this.addEntity(cube2);
+jgblue.j3d.drag = function (e) {
+    var j3d = jgblue.j3d;
+    if (j3d.isDragging) {
+        var rotQuat = j3d.arcball.drag([e.x, e.y]);
+        var rotMat = j3d.quaternions.quaternionToRotation(rotQuat);
+        j3d.thisRot = j3d.math.matrix4.mul(j3d.lastRot, rotMat);
+        var m = j3d.root.localMatrix;
+        j3d.math.matrix4.setUpper3x3(m, j3d.thisRot);
+        j3d.root.localMatrix = m;
 
-    function cubeUpdate() {
-        this.move(0.0, 0.0, -0.05);
-        this.rotate(2.0, 1.0);
+        j3d.client.render();
     }
-/*
-    function cubeUpdate2() {
-        this.move(0.0, 0.0, -0.01);
-        this.rotate(2.0, 1.0);
-    }*/
-}
+};
 
+jgblue.j3d.startDragging = function (e) {
+    jgblue.j3d.lastRot = jgblue.j3d.thisRot;
+    jgblue.j3d.arcball.click([e.x, e.y]);
+    jgblue.j3d.isDragging = true;    
+    if (!jgblue.j3d.hasFocus) {
+        jgblue.j3d.gotFocus();
+    }
+};
+
+jgblue.j3d.stopDragging = function (e) {
+    jgblue.j3d.isDragging = false;
+};
+
+
+jgblue.j3d.gotFocus = function (e) {
+    jgblue.j3d.focusIndicator.text("Got Focus");
+    hasFocus = true;
+};
+
+jgblue.j3d.lostFocus = function (e) {
+    jgblue.j3d.focusIndicator.text("Lost Focus");
+    hasFocus = false;
+};
+
+jgblue.j3d.scroll = function (e) {
+    var zoom = (e.deltaY < 0) ? 1 / jgblue.j3d.zoomFactor : jgblue.j3d.zoomFactor;
+    jgblue.j3d.zoomInOut(zoom);
+    jgblue.j3d.client.render();
+};
+
+jgblue.j3d.loadTestScene = function () {
+    var that = jgblue.j3d;
+    jgblue.j3d.getTextureMaterial("me.jpg", function (testMaterial) {
+        var numCubes = 2;
+        var cube;
+        for (var i = 0; i < numCubes; ++i) {
+            var newCube = new jgblue.j3d.Cube(testMaterial, cube);
+            cube = newCube;
+            newCube.setUpdateFn(cubeUpdate);
+            that.addEntity(newCube);
+        }
+
+        function cubeUpdate() {
+            this.rotate(1.0, 1.0);
+        }
+
+        that.client.render();
+    });
+
+};
 

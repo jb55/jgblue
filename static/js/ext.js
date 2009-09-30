@@ -1,7 +1,8 @@
 // Javascript inheritance by John Resig
 // Inspired by base2 and Prototype
 (function(){
-  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+  var initializing = false;
+  var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 
   // The base Class implementation (does nothing)
   this.Class = function(){};
@@ -43,8 +44,9 @@
     // The dummy class constructor
     function Class() {
       // All construction is actually done in the init method
-      if ( !initializing && this.init )
+      if ( !initializing && this.init ) {
         this.init.apply(this, arguments);
+      }
     }
    
     // Populate our constructed prototype object
@@ -69,9 +71,9 @@ Array.prototype.swap = function (a, b) {
     var tmp = this[a];
     this[a] = this[b];
     this[b] = tmp;
-}
+};
 
 String.prototype.contains = function (str) {
     return this.indexOf(str, 0) != -1;
-}
+};
 

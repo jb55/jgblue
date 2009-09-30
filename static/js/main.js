@@ -63,21 +63,6 @@ function g_insert(array, begin, end, v) {
  * order: 0 ascending, 1 descending
  */
 
-function g_msort(array, on_field, order)
-{
-    if(array.length < 2)
-        return array;
-    var middle = Math.ceil(array.length/2);
-    return g_merge(g_msort(array.slice(0, middle), on_field, order),
-            g_msort(array.slice(middle), on_field, order),
-            on_field, order);
-}
-
-function g_sort_val(obj, on_field) {
-    return obj.computed[on_field] === undefined ?
-            obj[on_field] : obj.computed[on_field];
-}
-
 function g_merge(left, right, on_field, order)
 {
     var result = [];
@@ -106,6 +91,22 @@ function g_merge(left, right, on_field, order)
     return result;
 }
 
+function g_msort(array, on_field, order)
+{
+    if (array.length < 2) {
+        return array;
+    }
+    var middle = Math.ceil(array.length/2);
+    return g_merge(g_msort(array.slice(0, middle), on_field, order),
+            g_msort(array.slice(middle), on_field, order),
+            on_field, order);
+}
+
+function g_sort_val(obj, on_field) {
+    return obj.computed[on_field] === undefined ?
+            obj[on_field] : obj.computed[on_field];
+}
+
 function g_sort(array, on_field, order) {
     return g_msort(array, on_field, order);
 }
@@ -114,8 +115,8 @@ function g_sort(array, on_field, order) {
 jgblue.j3d = jgblue.j3d || {};
 
 jgblue.j3d.loadModule = function (fn) {
-    $.getScript("http://dstatic.jgblue/js/jgblue.js", fn);
-}
+    $.getScript("http://dstatic.jgblue.com/js/jgblue3d.js", fn);
+};
 
 
 /* data index */
@@ -140,7 +141,7 @@ jgblue.listview = jgblue.listview || {};
 
 jgblue.listview.create = function(options, data) {
     return new jgblue.listview.Listview(options, data);
-}
+};
 
 jgblue.listview.screen_root = "http://s3.jgblue.com/img/items/";
 
@@ -148,11 +149,11 @@ jgblue.listview.compute_screenshot = function (data, sort_val) {
     var content = ["<div class=\"grid-cell\"><img src=\"", jgblue.listview.screen_root, data.item.thumb_uuid, "\"/>"];
     content.push("<p>", data.item.description, "</p></div>");
     return content.join("");
-}
+};
 
 jgblue.listview.screenshot_link = function (template, item) {
     return jgblue.listview.screen_root + item.uuid;
-}
+};
 
 jgblue.listview.Listview = function (options, data) {
 
@@ -189,7 +190,7 @@ jgblue.listview.Listview.prototype.get_col = function (id) {
         if (this.cols[i].id == id)
             return this.cols[i];
     return undefined;
-}
+};
 
 /* register events */
 jgblue.listview.Listview.prototype.register_events = function () {
@@ -213,10 +214,12 @@ jgblue.listview.Listview.prototype.register_events = function () {
             col_id = $(this).attr("id").slice(4);
             col = lv.get_col(col_id);
 
-            if ( col.asc === undefined )
+            if ( col.asc === undefined ) {
                 col.asc == true;
-            if ( col.cur_asc === undefined )
+            }
+            if ( col.cur_asc === undefined ) {
                 col.cur_asc = col.asc;
+            }
 
             lv.sort(col_id, col.cur_asc);
             saved_asc = col.cur_asc;
@@ -297,7 +300,7 @@ jgblue.listview.Listview.prototype.register_events = function () {
             pre_div.toggle();  
         });
     }
-}
+};
 
 jgblue.listview.Listview.prototype.switch_page = function (where) {
     switch (where) {
@@ -320,20 +323,20 @@ jgblue.listview.Listview.prototype.switch_page = function (where) {
     }
 
     this.rebuild_body();
-}
+};
 
 jgblue.listview.Listview.prototype.rebuild_body = function () {
     var body = [];
     this.body.empty();
     this.build_body(this.data, body);
     this.body.append(body.join(""));
-}
+};
 
 
 jgblue.listview.Listview.prototype.reset_sort_orders = function () {
     for (var i=0; i < this.cols.length; ++i)
         this.cols[i].cur_asc = this.cols[i].asc;
-}
+};
 
 jgblue.listview.Listview.prototype.sort = function (col_id, order) {
     var body = [];
@@ -341,7 +344,7 @@ jgblue.listview.Listview.prototype.sort = function (col_id, order) {
     this.data = g_sort(this.data, col_id, order);
     this.build_body(this.data, body);
     this.body.append(body.join(""));
-}
+};
 
 /** 
  * builds computed sort values so sort will work on computed fields
@@ -375,7 +378,7 @@ jgblue.listview.Listview.prototype.compute_sort_vals = function (items) {
         }
     }
     
-}
+};
 
 jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
     var i, j, item, col, val, link, sort_val, link_fn,
@@ -418,12 +421,12 @@ jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
         tab.push("</", this.item_node, ">");
 
         if (this.is_grid && k == this.template.grid-1) {
-            tab.push("</tr>")
+            tab.push("</tr>");
             k = -1;
         }
     }
 
-}
+};
 
 jgblue.listview.Listview.prototype.update_labels = function () {
     var len = this.count,
@@ -446,7 +449,7 @@ jgblue.listview.Listview.prototype.update_labels = function () {
         this.arrows.fastright.css("display", "none");
     }
 
-}
+};
 
 /* 
  * The template specifies what columns are needed and what information needs to be in each
@@ -473,10 +476,10 @@ jgblue.listview.Listview.prototype.build_table = function () {
     }
 
     tab.push("<tbody class=\"lv-body\">");
-    this.build_body(this.data, tab)
+    this.build_body(this.data, tab);
     tab.push("</tbody></table>");
     this.parent.append(tab.join(""));
-}
+};
     
 
 jgblue.listview.templates = {
@@ -519,25 +522,26 @@ jgblue.enums = {
  */
 
 /* intelligent tooltips */
-$("a").live("mouseover", function() {
-    var type, id, tooltip,
-        re = /^\/(item|medal)\/(\d+)/.exec($(this).attr("href"));
+$(document).ready(function () {
+    $("a").live("mouseover", function() {
+        var type, id, tooltip,
+            re = /^\/(item|medal)\/(\d+)/.exec($(this).attr("href"));
 
-    if (!re)
-        return;
-    if (re.length != 3)
-        return;
+        if (!re)
+            return;
+        if (re.length != 3)
+            return;
 
-    type = re[1];
-    id = re[2];
+        type = re[1];
+        id = re[2];
 
-    item = jgblue.index[id];
-    console.log(type + " link (" + item.name + ")");
+        item = jgblue.index[id];
 
-    switch (type) {
-    case "item":
-        break;
-    case "medal":
-        break;
-    }
+        switch (type) {
+        case "item":
+            break;
+        case "medal":
+            break;
+        }
+    });
 });
