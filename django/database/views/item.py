@@ -118,5 +118,6 @@ def detail(request, item_id):
     data["item"] = item
     data["tooltip"] = Tooltip(item)
     data["quickinfo"] = quickinfo
+    data["has_3d"] = True
              
     return jgblue_response("item/detail.htm", data, request)

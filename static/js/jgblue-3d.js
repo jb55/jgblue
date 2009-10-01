@@ -12,11 +12,13 @@ o3djs.require('o3djs.quaternion');
 var jgblue = jgblue || {};
 jgblue.j3d = jgblue.j3d || {};
 
+jgblue.j3d.ASSETS = "/s3/j3d/assets/";
+
 jgblue.j3d.getTexture = function (textureName, callback) {
 
     var lookup = jgblue.j3d.pack.getObjects(textureName, 'o3d.Texture');
 
-    var assetDir = "/j3d/assets/textures/";
+    var assetDir = jgblue.j3d.ASSETS + "textures/";
     o3djs.io.loadTexture(jgblue.j3d.pack, assetDir + textureName, function (texture, exception) {
         if (!exception) {
             texture.name = textureName;
@@ -31,7 +33,7 @@ jgblue.j3d.getTexture = function (textureName, callback) {
 jgblue.j3d.getMaterial = function (shader) {
     var client = jgblue.j3d;
     var material = o3djs.material.createMaterialFromFile(client.pack, 
-        "shaders/" + shader, client.view.performanceDrawList);
+        jgblue.j3d.ASSETS + "shaders/" + shader, client.view.performanceDrawList);
 
     return material;
 };
@@ -150,7 +152,7 @@ jgblue.j3d.init = function (options, onInit) {
     }
 
     that.hasFocus = false;
-    $(document).focus( function () {
+    $(document).mousedown( function () {
         that.lostFocus();
     });
 
@@ -193,6 +195,7 @@ jgblue.j3d.init = function (options, onInit) {
         o3djs.event.addEventListener(that.o3dElement, 'mousedown', that.startDragging);
         o3djs.event.addEventListener(that.o3dElement, 'mousemove', that.drag);
         o3djs.event.addEventListener(that.o3dElement, 'mouseup', that.stopDragging);
+        o3djs.event.addEventListener(that.o3dElement, 'wheel', that.scroll);
         
 
         /* arcball */
@@ -218,6 +221,7 @@ jgblue.j3d.initContext = function () {
     that.root.identity();
     that.lastRot = that.math.matrix4.identity();
     that.thisRot = that.math.matrix4.identity();
+    that.zoomFactor = 1.1;
 
     that.onResize();
     that.view.drawContext.view = that.math.matrix4.lookAt(
@@ -309,12 +313,16 @@ jgblue.j3d.stopDragging = function (e) {
 
 
 jgblue.j3d.gotFocus = function (e) {
-    jgblue.j3d.focusIndicator.text("Got Focus");
+    if (jgblue.j3d.focusIndicator) {
+        jgblue.j3d.focusIndicator.text("Got Focus");
+    }
     hasFocus = true;
 };
 
 jgblue.j3d.lostFocus = function (e) {
-    jgblue.j3d.focusIndicator.text("Lost Focus");
+    if (jgblue.j3d.focusIndicator) {
+        jgblue.j3d.focusIndicator.text("Lost Focus");
+    }
     hasFocus = false;
 };
 
@@ -322,6 +330,18 @@ jgblue.j3d.scroll = function (e) {
     var zoom = (e.deltaY < 0) ? 1 / jgblue.j3d.zoomFactor : jgblue.j3d.zoomFactor;
     jgblue.j3d.zoomInOut(zoom);
     jgblue.j3d.client.render();
+};
+
+jgblue.j3d.zoomInOut = function (zoom) {
+    var j3d = jgblue.j3d;
+    for (i = 0; i < j3d.eyeView.length; ++i) {
+        j3d.eyeView[i] = j3d.eyeView[i] / zoom;
+    }
+
+    j3d.view.drawContext.view = j3d.math.matrix4.lookAt(
+        j3d.eyeView,
+        [0, 0, 0],
+        [0, 1, 0]);
 };
 
 jgblue.j3d.loadTestScene = function () {

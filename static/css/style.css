@@ -161,7 +161,11 @@ img {
     vertical-align: 5px;
 }
 
-.tab-page, .tabs div {
+.tabs div {
+    background: #1c2028;
+}
+
+.tab-page, .tabs div.tab-hl, .tab-page-color {
 	background: #282e36;
 }
 
@@ -208,8 +212,8 @@ img {
     padding: 0;
 }
 
-.lv-row-highlight {
-    background-color: #2F3740;
+.lv-row-highlight, .tab-hover {
+    background-color: #2F3740 !important;
 }
 
 h1, h2 {
@@ -335,7 +339,6 @@ h3 {
 
 .tab-page {
     padding: 8px;
-    
 }
 
 .tabs {
@@ -373,7 +376,7 @@ h3 {
 }
 
 .menulist li a {
-	padding: 15px 18px 17px;
+    padding: 15px 18px 17px;
 }
 
 .menulist li {

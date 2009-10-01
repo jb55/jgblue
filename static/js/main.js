@@ -1,3 +1,4 @@
+/*jslint nomen:true, evil:false, browser:true, laxbreak:true, passfail:true, undef:true */
 // JGBlue.com
 var jgblue = jgblue || {};
 
@@ -48,7 +49,7 @@ function g_compute_enum(data, sort_val) {
 }
 
 function g_insert(array, begin, end, v) {
-    while(begin + 1 < end && array[begin+1] < v) {
+    while (begin + 1 < end && array[begin + 1] < v) {
         array.swap(begin, begin + 1);
         ++begin;
     }
@@ -131,6 +132,115 @@ jgblue.index = jgblue.index || {};
 jgblue.tooltip = jgblue.tooltip || {};
 
 
+/* ----------------------------------
+ *  Tabs
+ * ----------------------------------
+ */
+
+jgblue.tabs = jgblue.tabs || {};
+
+jgblue.tabs.Tabs = function (options) {
+    this.tabs = [];
+    this.tabmap = {};
+    this.hl_class = options.hl_class ? options.hl_class : "tab-hl";
+}
+
+jgblue.tabs.Tabs.prototype.add_tab = function (options) {
+    var tab = new jgblue.tabs.Tab(options, this);
+    this.tabmap[options.label] = tab;
+    this.tabs.push(tab);
+};
+
+jgblue.tabs.Tabs.prototype.get_tab = function (label) {
+    return this.tabmap[label];
+};
+
+jgblue.tabs.Tabs.prototype.unhighlight_tabs = function () {
+    for (var i = 0; i < this.tabs.length; ++i) {
+        this.tabs[i].unhighlight();
+    }
+};
+
+jgblue.tabs.create = function (options, tabs) {
+    var tabControl = new jgblue.tabs.Tabs(options);
+
+    if (tabs) {
+        for (var i = 0; i < tabs.length; ++i) {
+            tabControl.add_tab(tabs[i]);       
+        }
+
+        tabControl.unhighlight_tabs();
+        tabControl.current_tab = tabControl.tabs[0];
+        tabControl.current_tab.show();
+    }
+};
+
+jgblue.tabs.Tabs.prototype.tab_click = function (tab) {
+    if (this.current_tab) {
+        this.current_tab.hide();
+    }
+
+    tab.show();
+    this.current_tab = tab;
+
+    if ( tab.click ) {
+        tab.click()
+    }
+}
+
+/*
+ * Tab options:
+ *  label - The label on the tab
+ *  tabpage - the div which holds the tab page (optional - only if exists)
+ *  tab - the li which holds the actual tab (optional - only if exists) 
+ */
+jgblue.tabs.Tab = function (options, parent) {
+    
+    this.parent = parent;
+    this.tabpage = $(options.tabpage);
+    this.click = options.click;
+    this.hl_class = options.hl_class ? options.hl_class : parent.hl_class;
+    this.li = $(options.tab);
+    this.tab = $("div", this.li);
+    this.link = $("a", this.li);
+    this.label = options.label || this.tab.text();
+    this.is_selected = false;
+    
+    var that = this;
+    this.link.click( function () {
+        that.parent.tab_click(that);
+    });
+
+    this.link.hover( function () {
+        if (!that.is_selected) {
+            that.tab.attr("class", "tab-hover");
+        }
+    }, function () {
+        if (!that.is_selected) {
+            that.tab.attr("class", "");
+        }
+    });
+};
+
+jgblue.tabs.Tab.prototype.show = function () {
+    this.is_selected = true;
+    this.highlight();
+    this.tabpage.show();
+};
+
+jgblue.tabs.Tab.prototype.hide = function () {
+    this.is_selected = false;
+    this.unhighlight();
+    this.tabpage.hide();
+};
+
+jgblue.tabs.Tab.prototype.unhighlight = function () {
+    this.tab.attr("class", "");
+};
+
+jgblue.tabs.Tab.prototype.highlight = function () {
+    this.tab.attr("class", this.hl_class);
+};
 
 /* ----------------------------------
  *  Listview control
@@ -143,7 +253,7 @@ jgblue.listview.create = function(options, data) {
     return new jgblue.listview.Listview(options, data);
 };
 
-jgblue.listview.screen_root = "http://s3.jgblue.com/img/items/";
+jgblue.listview.screen_root = "/s3/img/items/";
 
 jgblue.listview.compute_screenshot = function (data, sort_val) {
     var content = ["<div class=\"grid-cell\"><img src=\"", jgblue.listview.screen_root, data.item.thumb_uuid, "\"/>"];

@@ -2,6 +2,12 @@
 {% load i18n %}
 
 {% block title %}{{ item.name }}{% endblock %}
+{% block head_scripts %}
+{% if has_3d %}
+<script src="http://dstatic.jgblue.com/j3d/o3djs/base.js" type="text/javascript"></script>
+<script src="http://dstatic.jgblue.com/js/jgblue-3d.js?7" type="text/javascript"></script>
+{% endif %}
+{% endblock %}
 
 {% block infobox %}
 <div id="infobox">
@@ -18,17 +24,27 @@
 
 {% block content %}
 <h1>{{ item.name }}</h1>
-{% include "tooltip.htm" %}
+<div style="min-height: 250px;">
+    <div style="float: left">
+    {% include "tooltip.htm" %}
+    </div>
+    <div style="float: left">
+    <div id="o3d" style="width: 250px; height: 250px;"></div>
+    </div>
+</div>
 <h2>{% trans "Related" %}</h2>
 <a name="uploaded"></a>
 <div class="tabs-container">
     <ul class="tabs">
-        <li><a href="#"><div>Screenshots</div></a></li>
-        <li><a href="#"><div>Comments</div></a></li>
+        <li id="screenshots-tab"><a href="javascript:;"><div>Screenshots</div></a></li>
+        <li id="comments-tab"><a href="javascript:;"><div>Comments</div></a></li>
+        {% if has_3d %}
+        <li id="j3d-tab"><a href="javascript:;"><div>3D</div></a></li>
+        {% endif %}
     </ul>
 </div>
 <div id="tab-pages">
-    <div id="screenshot-tabpage" class="tab-page">
+    <div id="screenshots-tabpage" class="tab-page">
         <div id="pre-div-bar">
             <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
         </div>
@@ -57,6 +73,13 @@
             {% include "controls/listview-bar.htm" %}
         </div>
     </div>
+    <div id="comments-tabpage" class="tab-page" style="display:none">
+         Here be comments
+    </div>
+    <div id="j3d-tabpage" class="tab-page" style="display:none">
+        <!-- Start of O3D plugin -->
+        <!-- End of O3D plugin -->
+    </div>
 </div>
 {% endblock %}
 {% block scripts %}
@@ -65,5 +88,30 @@
     var g_screenshots = {{ json_screenshots }};
     {% endautoescape %}
     var ss_lv = jgblue.listview.create({template:"screenshots", parent:"#screenshots-lv"}, g_screenshots)
+    var tabs = jgblue.tabs.create({}, [
+        { tabpage: "#screenshots-tabpage", tab: "#screenshots-tab" },
+        { tabpage: "#comments-tabpage", tab: "#comments-tab" }
+        {% if has_3d %}
+        ,{ tabpage: "#j3d-tabpage", tab: "#j3d-tab", click: onJ3D }
+        {% endif %}
+    ]);
+
+    {% if has_3d %}
+    var made = false;
+    var j3dclient;
+    function onJ3D() {
+        if (made == true) {
+            return;
+        }
+
+        made = true;
+        var options = {};
+        jgblue.j3d.createClient(options, function (client) {
+            client.loadTestScene();
+            j3dclient = client;
+        });
+    }
+    {% endif %}
+
 </script>
 {% endblock %}
