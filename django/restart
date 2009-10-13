@@ -1,12 +1,4 @@
 #!/bin/bash
-PROJDIR="/home/jb55/jgblue/django"
-PIDFILE="$PROJDIR/jgblue.pid"
-MAXCHILD=10
-
-cd $PROJDIR
-if [ -f $PIDFILE ]; then
-   kill `cat -- $PIDFILE`
-   rm -f -- $PIDFILE
-fi
-exec python ./manage.py runfcgi maxchildren=$MAXCHILD host=127.0.0.1 port=8081 pidfile=$PIDFILE --settings=settings
+PYTHONPATH=/home/jb55/django/src:/home/jb55/django/live-test-projects
+exec python ./manage.py runserver 127.0.0.1:8082
 

@@ -1,6 +1,7 @@
 from django.db import models
 from jgblue.database.managers.item import ItemManager
 from jgblue.database.enums import *
+from jgblue.database.tooltip import *
 
 
 UNK_CLASS = "Unknown Class (%d)"
@@ -66,12 +67,21 @@ class Item(models.Model):
 
     @property
     def dps(self):
-        return self.damage * self.fire_rate
+        return int(self.damage * self.fire_rate)
 
     @property
     def item_subclass_str(self):
         return get_subclass_name(self.item_class, self.item_subclass)
 
+    @property
+    def tooltip_template(self):
+        template = ITEM_TOOLTIP_TEMPLATES.get((self.item_class, self.item_subclass))
+        if not template:
+            template = ITEM_TOOLTIP_TEMPLATES.get(self.item_class)
+            if not template:
+                template = ItemTooltipTemplate
+        return template
+        
     def __unicode__(self):
         return self.name
 

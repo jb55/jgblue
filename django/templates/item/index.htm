@@ -1,0 +1,18 @@
+{% extends "base.htm" %}
+
+{% block title %}JGE Items{% endblock %}
+
+{% block infobox %}{% endblock %}
+
+{% block content %}
+{% include controls.items %}
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    {% autoescape off %}
+    var g_items = {{ json_items }};
+    {% endautoescape %}
+	var lv = jgblue.listview.create({template:"items", parent:"#items-lv"}, g_items);
+</script>
+{% endblock %}

@@ -1,17 +1,50 @@
-@import "http://static.jgblue.com/css/reset.css";
+html, body {
+	background-color: #0d151b;
+}
 
 body {
-	background-color: #0d151b;
 	background-image: url(http://static.jgblue.com/img/bg-fade.png);
 	background-repeat: repeat-x;
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 75%;
 	color: #eee;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5 {
+    margin: 0;
+}
+
+td {
+    padding: 0;
+}
+
+ol, ul {
+    margin: 0;
+    padding: 0;
 }
 
 p {
-	line-height: 20px;
-	margin-top: 15px;
+    line-height: 1.5em;
+    margin: 0.4em 0 0.5em;
+}
+
+.text ul li {
+	color: #0066ff;
+    list-style-type: disc; 
+}
+
+.text ul li span {
+	color: #ccdcff;
+}
+
+.text ul, .text ol {
+    margin: 1em 0;
+    padding-left: 26px;
+}
+
+.text {
+    line-height: 1.4em;
 }
 
 .tooltip {
@@ -63,8 +96,12 @@ p {
     text-align: right;
 }
 
+.form-msg {
+    font-style: italic;
+}
+
 table.generic td {
-    padding: 5px;
+    padding: 3px;
 }
 
 .tooltip td.price {
@@ -136,7 +173,11 @@ img {
     vertical-align: 5px;
 }
 
-.tab-page, .tabs div {
+.tabs div {
+    background: #1c2028;
+}
+
+.tab-page, .tabs div.tab-hl, .tab-page-color {
 	background: #282e36;
 }
 
@@ -147,6 +188,7 @@ img {
 
 .grid table td {
     border: 0 !important;
+    vertical-align: middle;
 }
 
 .listview table th {
@@ -182,12 +224,8 @@ img {
     padding: 0;
 }
 
-#pre-div-bar {
-    padding: 0 0 8px;
-}
-
-.lv-row-highlight {
-    background-color: #2F3740;
+.lv-row-highlight, .tab-hover {
+    background-color: #2F3740 !important;
 }
 
 h1, h2 {
@@ -224,6 +262,7 @@ h3 {
 
 #infobox th {
     white-space: nowrap;
+    text-align: left;
 }
 
 #infobox .alt {
@@ -247,7 +286,13 @@ h3 {
 }
 
 #container {
-	margin: 15px 8px 8px 8px;
+	padding: 15px; 
+}
+
+#container-frontpage {
+	padding: 100px 15px 15px 15px; 
+    height: 302px;
+    text-align: center;
 }
 
 #banner img {
@@ -307,7 +352,6 @@ h3 {
 
 .tab-page {
     padding: 8px;
-    
 }
 
 .tabs {
@@ -339,27 +383,23 @@ h3 {
 	overflow: hidden;
 }
 
-.menulist .first a
-{
+.menulist .first a {
 	border-left: none;
 	padding-left: 20px;
 }
 
-.menulist li a
-{
-	padding: 15px 18px 17px;
+.menulist li a {
+    padding: 15px 18px 17px;
 }
 
-.menulist li
-{
+.menulist li {
 	list-style-image: none;
 	background: url(http://static.jgblue.com/img/menu-sep.png) right no-repeat;
 	float: left;
 	margin: 0;
 }
 
-.menulist a
-{
+.menulist a {
 	text-decoration: none;
 	color: #ddd;
 	display: block;
@@ -374,11 +414,11 @@ a:hover {
 	text-decoration: underline;
 }
 
-.menulist a:hover
-{
+.menulist a:hover {
 	color: #ddd;
 }
 
 .subheading {
 	text-align: center;
+    margin-bottom: 10px;
 }

@@ -1,0 +1,30 @@
+{% load i18n %}
+<div id="screenshots-tabpage" class="tab-page">
+    <div id="pre-div-bar">
+        <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
+    </div>
+    <div id="screenshot-form" class="text pad">
+        {% if user.is_authenticated %}
+            <p>Browse for a file on your computer.
+            JPG, PNG, and GIF files are currently supported.</p>
+            {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li><span>{{ message }}</span></li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            <form action="?upload_ss" method="post" enctype="multipart/form-data">
+            <table class="generic">
+            {{ ss_form.as_table }}
+            </table>
+            <input type="submit" id="screenshot-submit" value="Submit"/>
+            </form>
+        {% else %}
+            You must be registered to submit screenshots. 
+        {% endif %}
+    </div>
+    <div id="screenshots-lv" class="listview grid">
+        {% include "controls/listview-bar.htm" %}
+    </div>
+</div>

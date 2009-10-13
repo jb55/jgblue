@@ -7,9 +7,9 @@ logging.basicConfig(
 )
 
 # Django settings for jgblue project.
-PROJECT_DIR = "/home/jb55/jgblue"
+PROJECT_DIR = "/home/jb55/jgblue-live-test/"
 STATIC_DIR = os.path.join(PROJECT_DIR, "static")
-TEMPLATES_DIR = os.path.join(STATIC_DIR, "templates")
+TEMPLATES_DIR = os.path.join(PROJECT_DIR, "django/templates")
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -84,6 +84,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.cache.FetchFromCacheMiddleware', # must be last
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "jgblue.database.context_processors.controls",
+)
+
 ROOT_URLCONF = 'jgblue.urls'
 
 TEMPLATE_DIRS = (
@@ -92,14 +100,6 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     TEMPLATES_DIR,
 )
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-)
-
 
 INSTALLED_APPS = (
     'django.contrib.auth',

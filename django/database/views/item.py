@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from jgblue.database.models.item import *
 from jgblue.database.models.image import *
 from jgblue.database.util.menu import *
@@ -8,8 +8,8 @@ from jgblue.database.enums import *
 from jgblue.database.forms import UploadScreenshotForm
 from jgblue.database.util.responses import jgblue_response
 from django.views.decorators.cache import cache_page
+from jgblue.database.tabs import Tabs
 
-MAX_VIEW_ITEMS = 200
 
 def get_item_args(has_cls, has_subcls, cls, subcls):
     kwargs = {}
@@ -46,9 +46,6 @@ def index(request, cls, subcls):
     items_total = items.count()
     items_shown = MAX_VIEW_ITEMS
 
-    if items_total < MAX_VIEW_ITEMS:
-        items_shown = items_total
-
     # json_items, used in the main page
     json_items = serialize(items, items_shown, fields=SerializeFields.ItemIndex)
 
@@ -62,6 +59,7 @@ def index(request, cls, subcls):
     menu = build_item_context(cls, subcls)
 
     data["menu"] = menu
+    data["precalc_lv_note"] = True
     data["items_displayed"] = items_shown
     data["items_total"] = items_total
     data["json_items"] = json_items
@@ -75,8 +73,10 @@ def detail(request, item_id):
     upload_msg = ""
     type = IMAGE_TARGET_DICT["Item"]
 
+    # handle screenshot uploads
     if request.GET.has_key('upload_ss'):
-        upload_msg = upload_screenshot(request, type, item_id) 
+        upload_screenshot(request, type, item_id) 
+        return HttpResponseRedirect("/item/" + item_id + "#uploaded");
 
     format = request.REQUEST.get('format')
 
@@ -111,11 +111,18 @@ def detail(request, item_id):
     # build breadcrumb context menu
     menu = build_item_context(item.item_class, item.item_subclass, item)
 
-    data["ss_msg"] = upload_msg
+    # build tabs
+    tabs = Tabs(["screenshots", "comments", "items"])
+    tabs.bind_data("screenshots", json_screenshots)
+    tabs.bind_data("comments", "undefined")
+    tabs.bind_data("items", serialize(Item.objects.get_item(item_id), 1, fields=SerializeFields.ItemIndex))
+
     data["ss_form"] = UploadScreenshotForm()
-    data["json_screenshots"] = json_screenshots
     data["menu"] = menu
     data["item"] = item
+    data["tooltip"] = Tooltip(item)
+    data["tabs"] = tabs
     data["quickinfo"] = quickinfo
+    data["has_3d"] = True
              
     return jgblue_response("item/detail.htm", data, request)

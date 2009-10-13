@@ -1,0 +1,60 @@
+<div class="tabs-container">
+    <ul class="tabs">
+        {% for tab in tabs %}
+        <li id="{{ tab.name }}-tab"><a href="javascript:;"><div>{{ tab.label }}</div></a></li>
+        {% endfor %}
+    </ul>
+</div>
+<div id="tab-pages">
+    {% for tab in tabs %}
+    <div id="{{ tab.name }}-tabpage" class="tab-page" style="
+        {% if not forloop.first %}
+            display:none
+        {% else %}{% endif %}">
+
+        {% if tab.template %}
+        {% include tab.template %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% block scripts %}
+<script type="text/javascript">
+    {% autoescape off %}
+    {% for tab_data in tabs.js_vars %}
+    {% if tab_data %}
+    {{ tab_data }}        
+    {% endif %}
+    {% endfor %}
+    {% endautoescape %}
+
+    {% for tab in tabs.listviews %}
+    var {{ tab }}_lv = jgblue.listview.create({template:"{{ tab }}", parent:"#{{ tab }}-lv"}, g_{{ tab }})
+    {% endfor %}
+
+    var tabs = jgblue.tabs.create({}, [
+    {% for tab in tabs %}
+        {% if not forloop.first %},{% endif %}
+        { tabpage: "#{{ tab.name }}-tabpage", tab: "#{{ tab.name }}-tab" }
+    {% endfor %}
+    ]);
+
+    {% if has_3d %}
+    var made = false;
+    var j3dclient;
+    function onJ3D() {
+        if (made == true) {
+            return;
+        }
+
+        made = true;
+        var options = {};
+        jgblue.j3d.createClient(options, function (client) {
+            client.loadTestScene();
+            j3dclient = client;
+        });
+    }
+    {% endif %}
+
+</script>
+{% endblock %}

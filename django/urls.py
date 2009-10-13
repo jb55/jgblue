@@ -14,7 +14,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^$', "jgblue.database.views.home.index"),
-    (r'^admin/$', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 	(r'^item/(\d+)$', 'jgblue.database.views.item.detail'),
     (r'^items/(\d*)\.?(\d*)$', 'jgblue.database.views.item.index'),
     (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'accounts/login.htm'}),

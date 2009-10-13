@@ -1,5 +1,6 @@
+/*jslint nomen:true, evil:false, browser:true, laxbreak:true, passfail:true, undef:true */
 // JGBlue.com
-var jgblue = {};
+var jgblue = jgblue || {};
 
 /* -------------------------------
  *  Global functions
@@ -48,7 +49,7 @@ function g_compute_enum(data, sort_val) {
 }
 
 function g_insert(array, begin, end, v) {
-    while(begin + 1 < end && array[begin+1] < v) {
+    while (begin + 1 < end && array[begin + 1] < v) {
         array.swap(begin, begin + 1);
         ++begin;
     }
@@ -62,21 +63,6 @@ function g_insert(array, begin, end, v) {
  * on_field: the field to sort on in Objects
  * order: 0 ascending, 1 descending
  */
-
-function g_msort(array, on_field, order)
-{
-    if(array.length < 2)
-        return array;
-    var middle = Math.ceil(array.length/2);
-    return g_merge(g_msort(array.slice(0, middle), on_field, order),
-            g_msort(array.slice(middle), on_field, order),
-            on_field, order);
-}
-
-function g_sort_val(obj, on_field) {
-    return obj.computed[on_field] === undefined ?
-            obj[on_field] : obj.computed[on_field];
-}
 
 function g_merge(left, right, on_field, order)
 {
@@ -106,12 +92,38 @@ function g_merge(left, right, on_field, order)
     return result;
 }
 
+function g_msort(array, on_field, order)
+{
+    if (array.length < 2) {
+        return array;
+    }
+    var middle = Math.ceil(array.length/2);
+    return g_merge(g_msort(array.slice(0, middle), on_field, order),
+            g_msort(array.slice(middle), on_field, order),
+            on_field, order);
+}
+
+function g_sort_val(obj, on_field) {
+    return obj.computed[on_field] === undefined ?
+            obj[on_field] : obj.computed[on_field];
+}
+
 function g_sort(array, on_field, order) {
     return g_msort(array, on_field, order);
 }
 
+
+jgblue.j3d = jgblue.j3d || {};
+
+jgblue.j3d.loadModule = function (fn) {
+    $.getScript("http://dstatic.jgblue.com/js/jgblue3d.js", fn);
+};
+
+
 /* data index */
 jgblue.index = jgblue.index || {};
+
+
 
 /* ----------------------------------
  * Tooltips
@@ -120,6 +132,116 @@ jgblue.index = jgblue.index || {};
 jgblue.tooltip = jgblue.tooltip || {};
 
 
+/* ----------------------------------
+ *  Tabs
+ * ----------------------------------
+ */
+
+jgblue.tabs = jgblue.tabs || {};
+
+jgblue.tabs.Tabs = function (options) {
+    this.tabs = [];
+    this.tabmap = {};
+    this.hl_class = options.hl_class ? options.hl_class : "tab-hl";
+}
+
+
+jgblue.tabs.Tabs.prototype.add_tab = function (options) {
+    var tab = new jgblue.tabs.Tab(options, this);
+    this.tabmap[options.label] = tab;
+    this.tabs.push(tab);
+};
+
+jgblue.tabs.Tabs.prototype.get_tab = function (label) {
+    return this.tabmap[label];
+};
+
+jgblue.tabs.Tabs.prototype.unhighlight_tabs = function () {
+    for (var i = 0; i < this.tabs.length; ++i) {
+        this.tabs[i].unhighlight();
+    }
+};
+
+jgblue.tabs.create = function (options, tabs) {
+    var tabControl = new jgblue.tabs.Tabs(options);
+
+    if (tabs) {
+        for (var i = 0; i < tabs.length; ++i) {
+            tabControl.add_tab(tabs[i]);       
+        }
+
+        tabControl.unhighlight_tabs();
+        tabControl.current_tab = tabControl.tabs[0];
+        tabControl.current_tab.show();
+    }
+};
+
+jgblue.tabs.Tabs.prototype.tab_click = function (tab) {
+    if (this.current_tab) {
+        this.current_tab.hide();
+    }
+
+    tab.show();
+    this.current_tab = tab;
+
+    if ( tab.click ) {
+        tab.click()
+    }
+}
+
+/*
+ * Tab options:
+ *  label - The label on the tab
+ *  tabpage - the div which holds the tab page (optional - only if exists)
+ *  tab - the li which holds the actual tab (optional - only if exists) 
+ */
+jgblue.tabs.Tab = function (options, parent) {
+    
+    this.parent = parent;
+    this.tabpage = $(options.tabpage);
+    this.click = options.click;
+    this.hl_class = options.hl_class ? options.hl_class : parent.hl_class;
+    this.li = $(options.tab);
+    this.tab = $("div", this.li);
+    this.link = $("a", this.li);
+    this.label = options.label || this.tab.text();
+    this.is_selected = false;
+    
+    var that = this;
+    this.link.click( function () {
+        that.parent.tab_click(that);
+    });
+
+    this.link.hover( function () {
+        if (!that.is_selected) {
+            that.tab.attr("class", "tab-hover");
+        }
+    }, function () {
+        if (!that.is_selected) {
+            that.tab.attr("class", "");
+        }
+    });
+};
+
+jgblue.tabs.Tab.prototype.show = function () {
+    this.is_selected = true;
+    this.highlight();
+    this.tabpage.show();
+};
+
+jgblue.tabs.Tab.prototype.hide = function () {
+    this.is_selected = false;
+    this.unhighlight();
+    this.tabpage.hide();
+};
+
+jgblue.tabs.Tab.prototype.unhighlight = function () {
+    this.tab.attr("class", "");
+};
+
+jgblue.tabs.Tab.prototype.highlight = function () {
+    this.tab.attr("class", this.hl_class);
+};
 
 /* ----------------------------------
  *  Listview control
@@ -130,19 +252,19 @@ jgblue.listview = jgblue.listview || {};
 
 jgblue.listview.create = function(options, data) {
     return new jgblue.listview.Listview(options, data);
-}
+};
 
-jgblue.listview.screen_root = "http://s3.jgblue.com/img/items/";
+jgblue.listview.screen_root = "/s3/img/items/";
 
 jgblue.listview.compute_screenshot = function (data, sort_val) {
     var content = ["<div class=\"grid-cell\"><img src=\"", jgblue.listview.screen_root, data.item.thumb_uuid, "\"/>"];
     content.push("<p>", data.item.description, "</p></div>");
     return content.join("");
-}
+};
 
 jgblue.listview.screenshot_link = function (template, item) {
     return jgblue.listview.screen_root + item.uuid;
-}
+};
 
 jgblue.listview.Listview = function (options, data) {
 
@@ -153,10 +275,15 @@ jgblue.listview.Listview = function (options, data) {
     this.item_node = this.is_grid ? "td" : "tr";
     this.parent_str = options.parent;
     this.parent = $(options.parent);
+    var target = $(".lv-target", this.parent);
+    this.lv_target = target.length ? target : this.parent;
     this.data = data.items;
-    this.per_page = 50;
+    this.displayed = data._displayed;
+    this.total = data._total;
+    this.per_page = this.template.per_page || 50;
     this.cur_page = 1;
     this.arrows = {};
+    this.sort_orders = [];
 
     this.last_page = Math.ceil(data.items.length / this.per_page);
     if ( this.last_page === 0 )
@@ -178,7 +305,7 @@ jgblue.listview.Listview.prototype.get_col = function (id) {
         if (this.cols[i].id == id)
             return this.cols[i];
     return undefined;
-}
+};
 
 /* register events */
 jgblue.listview.Listview.prototype.register_events = function () {
@@ -202,15 +329,18 @@ jgblue.listview.Listview.prototype.register_events = function () {
             col_id = $(this).attr("id").slice(4);
             col = lv.get_col(col_id);
 
-            if ( col.asc === undefined )
+            if ( col.asc === undefined ) {
                 col.asc == true;
-            if ( col.cur_asc === undefined )
+            }
+            if ( col.cur_asc === undefined ) {
                 col.cur_asc = col.asc;
+            }
 
             lv.sort(col_id, col.cur_asc);
             saved_asc = col.cur_asc;
             lv.reset_sort_orders();
             col.cur_asc = !saved_asc;
+
         });
     }
 
@@ -285,7 +415,7 @@ jgblue.listview.Listview.prototype.register_events = function () {
             pre_div.toggle();  
         });
     }
-}
+};
 
 jgblue.listview.Listview.prototype.switch_page = function (where) {
     switch (where) {
@@ -308,28 +438,28 @@ jgblue.listview.Listview.prototype.switch_page = function (where) {
     }
 
     this.rebuild_body();
-}
+};
 
 jgblue.listview.Listview.prototype.rebuild_body = function () {
     var body = [];
     this.body.empty();
     this.build_body(this.data, body);
     this.body.append(body.join(""));
-}
+};
 
 
 jgblue.listview.Listview.prototype.reset_sort_orders = function () {
     for (var i=0; i < this.cols.length; ++i)
         this.cols[i].cur_asc = this.cols[i].asc;
-}
+};
 
-jgblue.listview.Listview.prototype.sort = function (column_id, order) {
+jgblue.listview.Listview.prototype.sort = function (col_id, order) {
     var body = [];
     this.body.empty();
-    this.data = g_sort(this.data, column_id, order);
+    this.data = g_sort(this.data, col_id, order);
     this.build_body(this.data, body);
     this.body.append(body.join(""));
-}
+};
 
 /** 
  * builds computed sort values so sort will work on computed fields
@@ -363,7 +493,7 @@ jgblue.listview.Listview.prototype.compute_sort_vals = function (items) {
         }
     }
     
-}
+};
 
 jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
     var i, j, item, col, val, link, sort_val, link_fn,
@@ -371,6 +501,11 @@ jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
         num_items = items.length;
 
     this.update_labels();
+
+    /* update note label once */
+    var displayed_str = "<b>" + this.displayed + "</b> displayed.";
+    this.note.html("<b>" + this.total + "</b> found. " +
+        (this.total == this.displayed ? "" : displayed_str));
 
     sort_val = { val: undefined };
 
@@ -406,12 +541,12 @@ jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
         tab.push("</", this.item_node, ">");
 
         if (this.is_grid && k == this.template.grid-1) {
-            tab.push("</tr>")
+            tab.push("</tr>");
             k = -1;
         }
     }
 
-}
+};
 
 jgblue.listview.Listview.prototype.update_labels = function () {
     var len = this.count,
@@ -434,7 +569,7 @@ jgblue.listview.Listview.prototype.update_labels = function () {
         this.arrows.fastright.css("display", "none");
     }
 
-}
+};
 
 /* 
  * The template specifies what columns are needed and what information needs to be in each
@@ -445,7 +580,6 @@ jgblue.listview.Listview.prototype.build_table = function () {
     var num_cols = this.cols.length,
         tab = ["<table width=\"100%\">"],
         col = this.cols[0],
-        url = window.location.href + "?json=1",
         i=0;
 
     if (!this.template.skip_head) {
@@ -461,10 +595,11 @@ jgblue.listview.Listview.prototype.build_table = function () {
     }
 
     tab.push("<tbody class=\"lv-body\">");
-    this.build_body(this.data, tab)
+    this.build_body(this.data, tab);
     tab.push("</tbody></table>");
-    this.parent.append(tab.join(""));
-}
+    
+    this.lv_target.append(tab.join(""));
+};
     
 
 jgblue.listview.templates = {
@@ -485,9 +620,10 @@ jgblue.listview.templates = {
         skip_head: true,
         pre_div: "#screenshot-form",
         pre_div_toggler: "#screen-form-toggler",
-        pre_div_auto_search: "upload_ss",
+        pre_div_auto_hash: "uploaded",
         link: jgblue.listview.screenshot_link,
         grid: 4,
+        per_page: 16,
         columns: [
             {id: "screenshot", name: "Screenshot", type: "custom", align: "center", width: "25%", 
              compute:jgblue.listview.compute_screenshot} 
@@ -506,25 +642,26 @@ jgblue.enums = {
  */
 
 /* intelligent tooltips */
-$("a").live("mouseover", function() {
-    var type, id, tooltip,
-        re = /^\/(item|medal)\/(\d+)/.exec($(this).attr("href"));
+$(document).ready(function () {
+    $("a").live("mouseover", function() {
+        var type, id, tooltip,
+            re = /^\/(item|medal)\/(\d+)/.exec($(this).attr("href"));
 
-    if (!re)
-        return;
-    if (re.length != 3)
-        return;
+        if (!re)
+            return;
+        if (re.length != 3)
+            return;
 
-    type = re[1];
-    id = re[2];
+        type = re[1];
+        id = re[2];
 
-    item = jgblue.index[id];
-    console.log(type + " link (" + item.name + ")");
+        item = jgblue.index[id];
 
-    switch (type) {
-    case "item":
-        break;
-    case "medal":
-        break;
-    }
+        switch (type) {
+        case "item":
+            break;
+        case "medal":
+            break;
+        }
+    });
 });
