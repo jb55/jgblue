@@ -1,0 +1,38 @@
+{% extends "base.htm" %}
+{% load i18n %}
+
+{% block title %}{{ item.name }}{% endblock %}
+{% block head_scripts %}
+{% if has_3d %}
+<script src="http://dstatic.jgblue.com/j3d/o3djs/base.js" type="text/javascript"></script>
+<script src="http://dstatic.jgblue.com/js/jgblue-3d.js?7" type="text/javascript"></script>
+{% endif %}
+{% endblock %}
+
+{% block infobox %}
+<div id="infobox">
+<h5>{% trans "Quick Info" %}</h5>
+<table>
+{% for label, value in quickinfo %}
+{% if value %}
+<tr {% cycle '' 'class="alt"' %}><th>{{ label }}:</th><td>{{ value }}</td></tr>
+{% endif %}
+{% endfor %}
+</table>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{{ item.name }}</h1>
+<div style="min-height: 250px;">
+    <div style="float: left">
+    {% include "tooltip.htm" %}
+    </div>
+    <div style="float: left">
+    <div id="o3d" style="width: 250px; height: 250px;"></div>
+    </div>
+</div>
+<br/>
+<h2>{% trans "Related" %}</h2>
+{% include controls.tabs %}
+{% endblock %}

@@ -19,21 +19,23 @@ jgblue.j3d.getTexture = function (textureName, callback) {
     var lookup = jgblue.j3d.pack.getObjects(textureName, 'o3d.Texture');
 
     var assetDir = jgblue.j3d.ASSETS + "textures/";
-    o3djs.io.loadTexture(jgblue.j3d.pack, assetDir + textureName, function (texture, exception) {
-        if (!exception) {
-            texture.name = textureName;
-        } else {
-            window.console.log(exception);
-        }
+    o3djs.io.loadTexture(jgblue.j3d.pack, assetDir + textureName, 
+        function (texture, exception) {
+            if (!exception) {
+                texture.name = textureName;
+            } else {
+                window.console.log(exception);
+            }
 
-        callback(texture, exception);
+            callback(texture, exception);
     });
 };
 
 jgblue.j3d.getMaterial = function (shader) {
     var client = jgblue.j3d;
     var material = o3djs.material.createMaterialFromFile(client.pack, 
-        jgblue.j3d.ASSETS + "shaders/" + shader, client.view.performanceDrawList);
+        jgblue.j3d.ASSETS + "shaders/" + shader, 
+        client.view.performanceDrawList);
 
     return material;
 };
@@ -82,7 +84,8 @@ jgblue.j3d.Entity = Class.extend({
     },
 
     rotate: function (x, y, z) {
-        var vec = this.client.math.mulVectorScalar([x?x:0, y?y:0, z?z:0], this.client.clock); 
+        var vec = this.client.math.mulVectorScalar([x?x:0, y?y:0, z?z:0],
+                                                    this.client.clock); 
         this.rot_transform.identity();
         this.rot_transform.rotateZYX(vec);
     },
@@ -196,15 +199,13 @@ jgblue.j3d.init = function (options, onInit) {
         o3djs.event.addEventListener(that.o3dElement, 'mousemove', that.drag);
         o3djs.event.addEventListener(that.o3dElement, 'mouseup', that.stopDragging);
         o3djs.event.addEventListener(that.o3dElement, 'wheel', that.scroll);
-        
 
         /* arcball */
         that.arcball = o3djs.arcball.create(that.client.width, that.client.height);
 
-        that.client.renderMode = that.o3d.Client.RENDERMODE_ON_DEMAND;
+        that.client.renderMode = that.o3d.Client.RENDERMODE_CONTINUOUS;
         that.initContext();
-
-        that.client.render();
+        that.client.setRenderCallback(jgblue.j3d.render);
 
         if (onInit) {
             onInit(that);
@@ -222,6 +223,7 @@ jgblue.j3d.initContext = function () {
     that.lastRot = that.math.matrix4.identity();
     that.thisRot = that.math.matrix4.identity();
     that.zoomFactor = 1.1;
+    that.manualRotate = false;
 
     that.onResize();
     that.view.drawContext.view = that.math.matrix4.lookAt(
@@ -265,11 +267,11 @@ jgblue.j3d.createTestMaterial = function () {
 };
 
 jgblue.j3d.render = function (renderEvent) {
-    var that = jgblue.j3d;
-    that.clock += renderEvent.elapsedTime * that.timeMult;
+    var j3d = jgblue.j3d;
+    j3d.clock += renderEvent.elapsedTime * j3d.timeMult;
 
-    for (var i = 0; i < that.entities.length; ++i) {
-        var ent = that.entities[i];
+    for (var i = 0; i < j3d.entities.length; ++i) {
+        var ent = j3d.entities[i];
         ent.update();
     }
 };
@@ -298,12 +300,25 @@ jgblue.j3d.drag = function (e) {
     }
 };
 
+jgblue.j3d.setOnDemandRendering = function (isOnDemand) {
+    if (isOnDemand) {
+        jgblue.j3d.client.renderMode = jgblue.j3d.o3d.Client.RENDERMODE_ON_DEMAND;
+    } else {
+        jgblue.j3d.client.renderMode = jgblue.j3d.o3d.Client.RENDERMODE_CONTINUOUS;
+    }
+};
+
 jgblue.j3d.startDragging = function (e) {
-    jgblue.j3d.lastRot = jgblue.j3d.thisRot;
-    jgblue.j3d.arcball.click([e.x, e.y]);
-    jgblue.j3d.isDragging = true;    
-    if (!jgblue.j3d.hasFocus) {
-        jgblue.j3d.gotFocus();
+    /* stop spinning and switch to on demand rendering when rotated */
+    var j3d = jgblue.j3d;
+    if (!j3d.manualRotate) {
+        j3d.manualRotate = true;
+    }
+    j3d.lastRot = jgblue.j3d.thisRot;
+    j3d.arcball.click([e.x, e.y]);
+    j3d.isDragging = true;    
+    if (!j3d.hasFocus) {
+        j3d.gotFocus();
     }
 };
 
@@ -347,7 +362,7 @@ jgblue.j3d.zoomInOut = function (zoom) {
 jgblue.j3d.loadTestScene = function () {
     var that = jgblue.j3d;
     jgblue.j3d.getTextureMaterial("me.jpg", function (testMaterial) {
-        var numCubes = 2;
+        var numCubes = 1;
         var cube;
         for (var i = 0; i < numCubes; ++i) {
             var newCube = new jgblue.j3d.Cube(testMaterial, cube);
@@ -357,7 +372,9 @@ jgblue.j3d.loadTestScene = function () {
         }
 
         function cubeUpdate() {
-            this.rotate(1.0, 1.0);
+            if (!this.client.manualRotate) {
+                this.rotate(0.0, 1.0);
+            }
         }
 
         that.client.render();

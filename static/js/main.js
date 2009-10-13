@@ -145,6 +145,7 @@ jgblue.tabs.Tabs = function (options) {
     this.hl_class = options.hl_class ? options.hl_class : "tab-hl";
 }
 
+
 jgblue.tabs.Tabs.prototype.add_tab = function (options) {
     var tab = new jgblue.tabs.Tab(options, this);
     this.tabmap[options.label] = tab;
@@ -274,7 +275,11 @@ jgblue.listview.Listview = function (options, data) {
     this.item_node = this.is_grid ? "td" : "tr";
     this.parent_str = options.parent;
     this.parent = $(options.parent);
+    var target = $(".lv-target", this.parent);
+    this.lv_target = target.length ? target : this.parent;
     this.data = data.items;
+    this.displayed = data._displayed;
+    this.total = data._total;
     this.per_page = this.template.per_page || 50;
     this.cur_page = 1;
     this.arrows = {};
@@ -497,6 +502,11 @@ jgblue.listview.Listview.prototype.build_body = function (items, tab, order) {
 
     this.update_labels();
 
+    /* update note label once */
+    var displayed_str = "<b>" + this.displayed + "</b> displayed.";
+    this.note.html("<b>" + this.total + "</b> found. " +
+        (this.total == this.displayed ? "" : displayed_str));
+
     sort_val = { val: undefined };
 
     /* load all items and put their data into their respective columns */
@@ -570,7 +580,6 @@ jgblue.listview.Listview.prototype.build_table = function () {
     var num_cols = this.cols.length,
         tab = ["<table width=\"100%\">"],
         col = this.cols[0],
-        url = window.location.href + "?json=1",
         i=0;
 
     if (!this.template.skip_head) {
@@ -588,7 +597,8 @@ jgblue.listview.Listview.prototype.build_table = function () {
     tab.push("<tbody class=\"lv-body\">");
     this.build_body(this.data, tab);
     tab.push("</tbody></table>");
-    this.parent.append(tab.join(""));
+    
+    this.lv_target.append(tab.join(""));
 };
     
 

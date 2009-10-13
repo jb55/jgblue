@@ -7,8 +7,8 @@ from jgblue.database.util.serialize import *
 from jgblue.database.enums import *
 from jgblue.database.forms import UploadScreenshotForm
 from jgblue.database.util.responses import jgblue_response
+from jgblue.database.tabs import Tabs
 
-MAX_VIEW_ITEMS = 200
 
 def get_item_args(has_cls, has_subcls, cls, subcls):
     kwargs = {}
@@ -43,9 +43,6 @@ def index(request, cls, subcls):
     items = Item.objects.get_items(**kwargs)
     items_total = items.count()
     items_shown = MAX_VIEW_ITEMS
-
-    if items_total < MAX_VIEW_ITEMS:
-        items_shown = items_total
 
     # json_items, used in the main page
     json_items = serialize(items, items_shown, fields=SerializeFields.ItemIndex)
@@ -112,11 +109,17 @@ def detail(request, item_id):
     # build breadcrumb context menu
     menu = build_item_context(item.item_class, item.item_subclass, item)
 
+    # build tabs
+    tabs = Tabs(["screenshots", "comments", "items"])
+    tabs.bind_data("screenshots", json_screenshots)
+    tabs.bind_data("comments", "undefined")
+    tabs.bind_data("items", serialize(Item.objects.get_item(item_id), 1, fields=SerializeFields.ItemIndex))
+
     data["ss_form"] = UploadScreenshotForm()
-    data["json_screenshots"] = json_screenshots
     data["menu"] = menu
     data["item"] = item
     data["tooltip"] = Tooltip(item)
+    data["tabs"] = tabs
     data["quickinfo"] = quickinfo
     data["has_3d"] = True
              

@@ -2,17 +2,11 @@
 
 {% block title %}JGE Items{% endblock %}
 
-
 {% block infobox %}{% endblock %}
 
 {% block content %}
-<div class="listview" id="items-lv">
-{% include "controls/listview-bar.htm" %}
-</div>
-
-
+{% include controls.items %}
 {% endblock %}
-
 
 {% block scripts %}
 <script type="text/javascript">

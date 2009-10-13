@@ -7,6 +7,9 @@ class ItemManager(models.Manager):
         q = self.filter(id=id, is_latest=1)
         return q;
 
+    def search_item_name(self, search):
+        return self.filter(name__icontains=search, is_latest=1)
+
     def get_items(self, category=(-1,-1), page=1, per_page=25):
         cat_filter = {}
         if category[0] != -1:
