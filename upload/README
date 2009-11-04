@@ -1,4 +1,4 @@
 staging: staging area for uploading to amazon s3
-recent: images recently uploaded to s3
+uploaded: images recently uploaded to s3
 tmp: temporary holding area for form-uploaded images
 

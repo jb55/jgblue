@@ -77,3 +77,23 @@ String.prototype.contains = function (str) {
     return this.indexOf(str, 0) != -1;
 };
 
+
+function $A(a)
+{
+  var r = [];
+  for (var i = 0, len = a.length; i < len; ++i)
+    r.push(a[i]);
+  return r;
+}
+
+Function.prototype.bind = function()
+{
+  var
+    __method = this,
+    args = $A(arguments),
+    object = args.shift();
+
+  return function() {
+    return __method.apply(object, args.concat($A(arguments)))
+  };
+}

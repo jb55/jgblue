@@ -1,5 +1,6 @@
 {% load i18n %}
 <a name="uploaded"></a>
+{% if not is_search %}
 <div class="pre-div-bar">
     <a href="javascript:;" id="screen-form-toggler" >{% trans "Submit a screenshot" %}</a>
 </div>
@@ -24,6 +25,7 @@
         You must be registered to submit screenshots. 
     {% endif %}
 </div>
+{% endif %}
 <div id="screenshots-lv" class="listview grid">
     {% include "controls/listview-bar.htm" %}
 </div>

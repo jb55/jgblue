@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>JGBlue Dev</ShortName>
+<Description>JGBlue Dev</Description>
+<Url
+  type="text/html"
+  method="get"
+  template="http://dev.jgblue.com/?q={searchTerms}" />
+
+<Url
+  type="application/x-suggestions+json"
+  method="get"
+  template="http://dev.jgblue.com/?q={searchTerms}&amp;os" />
+
+<Image height="16" width="16" type="image/vnd.microsoft.icon">http://www.jgblue.com/favicon.ico</Image>
+<Image height="16" width="16" type="image/png">http://www.jgblue.com/favicon.png</Image>
+
+</OpenSearchDescription>
