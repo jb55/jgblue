@@ -7,7 +7,7 @@ logging.basicConfig(
 )
 
 # Django settings for jgblue project.
-PROJECT_DIR = "/home/jb55/jgblue-live-test/"
+PROJECT_DIR = "/home/jb55/jgblue/"
 STATIC_DIR = os.path.join(PROJECT_DIR, "static")
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "django/templates")
 

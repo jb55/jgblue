@@ -10,8 +10,8 @@ OPTS="$OPTS --acl-public"
 DEST=s3://s3.jgblue.com/img/items/
 
 cd $TMP && \
-mv $FILES $STAGING/ 
+mv $FILES $STAGING/ &> /dev/null 
 cd $STAGING && \
 s3cmd $OPTS put $FILES $DEST && \
-mv $FILES $UPLOADED/
+mv $FILES $UPLOADED/ &> /dev/null
 
