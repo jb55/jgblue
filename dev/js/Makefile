@@ -17,6 +17,8 @@ CAT_CMD=cat $^ > ${OUTDIR}$@
 
 SED_REPLACE=-e 's/^o3djs\.require\(.*\);$$//g'
 
+default: all
+
 jgblue3d.js: combined3d.js
 	${COMPRESS_CMD}
 
