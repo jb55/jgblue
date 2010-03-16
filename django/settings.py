@@ -11,7 +11,7 @@ PROJECT_DIR = "/home/jb55/jgblue-dev"
 STATIC_DIR = os.path.join(PROJECT_DIR, "static")
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "django/templates")
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

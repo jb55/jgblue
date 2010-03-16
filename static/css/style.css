@@ -328,6 +328,7 @@ h3 {
 
 
 #content {
+  min-height: 100px;
 	background-color: #20252b;
 	padding: 10px;
 	border: #101317 solid 1px;

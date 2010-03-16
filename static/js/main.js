@@ -141,6 +141,7 @@ jgblue.home.init = function () {
   search.keyup( function () {
     var query = search.val();
     if (query.length > 0) {
+      home.cancel = false;
       home.prefetch_suggestions("/?q=" + query + "&os");
     } else {
       home.cancel = true;
